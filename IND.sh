@@ -30,7 +30,6 @@ function installnxd
 		echo " "
 		echo "Remove Existing Nextion Driver"
 
-
 		#Remove the Nextion Driver if it exists
                 if [ -f /usr/local/bin/NextionDriver ] ; then
 			sudo rm /usr/local/bin/NextionDriver
@@ -171,7 +170,7 @@ sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; 
 	#rm -R /Nextion
         
 	if [ -f /home/pi-star/ndis.txt ]; then
-	  rm /home/pi-star/ndis.txt
+	sudo  rm /home/pi-star/ndis.txt
 	fi
 	sudo reboot
 
