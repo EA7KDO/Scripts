@@ -31,11 +31,6 @@ function installnxd
 		echo "Remove Existing Nextion Driver"
 
 
-## Not Yet Implemented
-		if [ ! -f /home/pi-star/ndis.txt ]; then
-		 echo $(pwd)"/installnextiondriver.sh" >  /home/pi-star/ndis.txt
-		fi
-
 		#Remove the Nextion Driver if it exists
                 if [ -f /usr/local/bin/NextionDriver ] ; then
 			sudo rm /usr/local/bin/NextionDriver
@@ -64,12 +59,6 @@ if [ ! -d /temp ] ; then
    sudo mkdir /temp
 fi
  
-if [ -f /home/pi-star/ndis.txt ]; then
-continue=1
-
-else
-
-  
 PS3='Choose the option that reflects what you need done: '
 options=("Update" "Start" "Continue" "Quit")
 select opt in "${options[@]}"
@@ -98,11 +87,9 @@ do
         *) echo "invalid option $REPLY";;
     esac
 done
-fi
 echo " "
 
 
-if [ $continue = 1 ]; then
 	sudo chmod 755 /usr/local/sbin/nextion*
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
@@ -187,6 +174,5 @@ sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; 
 	  rm /home/pi-star/ndis.txt
 	fi
 	sudo reboot
-fi
 
 
