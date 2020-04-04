@@ -165,6 +165,7 @@ sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; 
 	sudo apt-get install bc
 
 	sudo rm -R /temp
+	sudo echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw
 	sudo pistar-firewall
 
 	echo "Nextion Driver Installation Completed"
