@@ -164,8 +164,11 @@ sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; 
 	echo "Installing BC"
 	sudo apt-get install bc
 
+	sudo mount -o remount,rw /
+
 	sudo rm -R /temp
-	sudo echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw
+	sudo echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /home/pi-star/ipv4.fw
+	sudo cp /home/pi-star/ipv4.fw /root
 	sudo pistar-firewall
 
 	echo "Nextion Driver Installation Completed"
