@@ -8,6 +8,23 @@
 set -o errexit
 set -o pipefail
 export NCURSES_NO_UTF8_ACS=1
+
+if [ -f ~/.dialog ]; then
+ j=1
+else
+ dialog --create-rc ~/.dialogrc
+fi
+#use_colors = ON
+#screen_color = (WHITE,BLUE,ON)
+#title_color = (YELLOW,RED,ON)
+sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
+sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
+
+
+
+echo -e '\e[1;44m'
+clear
 sudo mount -o remount,rw /
 homedir=/home/pi-star/
 curdir=$(pwd)
@@ -62,13 +79,13 @@ fi
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="Nextion Driver & Support Install Script"
-TITLE="Install Nextion Driver Main Menu"
-MENU="Choose one of the following options:"
+BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  anf Firewall Rule"
+TITLE="Main Menu - Nextion Driver Installation"
+MENU="Select your Installation Mode"
 
 OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
          2 "Install Nextion Driver - No Update"
-         3 "Continue after Reboot"
+         3 "Continue after Reboot from Option 1 or 2"
 	 4 "Quit")
 
 CHOICE=$(dialog --clear \
@@ -80,6 +97,7 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 clear
+echo -e '\e[1;44m'
 case $CHOICE in
         1)
             echo "You Chose Pi-Star Update + Install"
@@ -113,8 +131,8 @@ echo " "
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
 	echo " "
 
-TITLE="Select Your Screen to Pi Interface"
-MENU="Choose one of the following options:"
+TITLE="Second Level Menue - Continue"
+MENU="Choose your Screen-to-Pi Interface"
 
 OPTIONS=(1 "USB to TTL Interface"
          2 "GPIO Pins"
@@ -162,8 +180,8 @@ sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; 
 
 
 
-TITLE="Select Temperature Mode"
-MENU="Choose one of the following options:"
+#TITLE="Select Temperature Mode"
+MENU="Select your Temperature Display Type"
 
 OPTIONS=(1 "Fahrenheit"
          2 "Celcius"
@@ -211,6 +229,10 @@ case $CHOICE in
 	if [ -f /home/pi-star/ndis.txt ]; then
 	sudo  rm /home/pi-star/ndis.txt
 	fi
+
+echo -e '\e[1;40m'
+clear
+
 	sudo reboot
 
 
