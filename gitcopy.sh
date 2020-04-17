@@ -18,7 +18,11 @@ if [ -z "$1" ]; then
 	echo "No Screen Name Provided"
 	exit
 fi
+
+
 scn="$1"
+scn="${scn:0:10}"
+
 call="$2"
 fb="$3"
 calltxt="EA7KDO"
