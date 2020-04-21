@@ -43,6 +43,7 @@ function flashscreen
 			echo "Rebooting ......"
 			sudo reboot
 }
+sudo mount -o remount,rw /
 
 errtxt="Nothing"
 
@@ -60,7 +61,6 @@ sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
 echo -e '\e[1;44m'
 clear
-sudo mount -o remount,rw /
 homedir=/home/pi-star/
 curdir=$(pwd)
 clear
