@@ -20,7 +20,7 @@ echo "Services Stopped"
 
 
 if [ -z "$1" ]; then
-	echo "Syntax:  flash NX3224K024.tft "
+	echo "Syntax:  flash NX3224K024.tft  or flash NX4832K035.tft"
 	echo "Where NX3224K024.tft is Your Screen File"
 	echo "The file must be located in /usr/local/etc/"
 	exit
@@ -34,7 +34,7 @@ else
 	echo "File $pathstr NOT Found - Flash Aborted!"
 fi;
 
-
-sudo python nextion.py ./NX3224K024.tft /dev/ttyUSB0
+echo "Screen File = $pathstr"
+sudo python nextion.py "$pathstr" /dev/ttyUSB0
 
 sudo reboot
