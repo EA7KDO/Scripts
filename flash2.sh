@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-#  This script will flash the TFT File ino The Nextion Screen #
+#  This script will flash the TFT File into The Nextion Screen #
 #                                                             #
 #  VE3RD                                      2020/04/07      #
 ###############################################################

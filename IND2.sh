@@ -79,7 +79,7 @@ fi
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  anf Firewall Rule"
+BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD"
 TITLE="Main Menu - Nextion Driver Installation"
 MENU="Select your Installation Mode"
 
@@ -175,7 +175,10 @@ case $CHOICE in
 
         if [ -z "$m1" ]; then
                 sudo mount -o remount,rw /
-sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x' /etc/mmdvmhost
+
+                p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
+                p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
+                sudo sed -i "$p1$p2" /etc/mmdvmhost
          fi
 
 

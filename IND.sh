@@ -134,7 +134,10 @@ echo " "
 
         if [ -z "$m1" ]; then
                 sudo mount -o remount,rw /
-sudo sed -i '/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x' /etc/mmdvmhost
+	
+		p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
+		p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
+		sudo sed -i "$p1$p2" /etc/mmdvmhost
          fi
 
         PS3='Select The Temperature Mode:'
