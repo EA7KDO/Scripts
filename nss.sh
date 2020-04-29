@@ -50,8 +50,8 @@ function addline
 	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 	sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
-#	sudo pistar-update
-#	sudo reboot
+	sudo pistar-update
+	sudo reboot
 
 }
 function readmain
