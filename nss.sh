@@ -1,13 +1,13 @@
 #!/bin/bash
-###################################################################
-#  Prime_TGIF_Network Support        	 			  #
-#  This Script will test the /usr/local/etc/DMR_Hosts.txt File    #
-#  and /root/DMR_Hosts File for the prime.tgif.network IPAddress  #
-#  and add the required line to /root/DMR_Hosts.txt if it was 	  #
-#  not found in ether file				 	  #
-#								  #
-#  VE3RD                               2020=04-22                 #
-###################################################################
+######################################################################
+#  Prime_TGIF_Network Support        	 			     #
+#  This Script will test the /usr/local/etc/DMR_Hosts.txt File       #
+#  and /root/DMR_Hosts File for the prime.tgif.network IPAddress     #
+#  and add the required line to /root/DMR_Hosts.txt if it was 	     #
+#  not found in ether file				 	     #
+#								     #
+#  VE3RD                               			2020-04-24   #
+######################################################################
 sudo mount -o remount,rw /
 export NCURSES_NO_UTF8_ACS=1
 declare -i mode=0
@@ -119,14 +119,16 @@ if [ "$response" == "0" ] && [ "$mode" == 1 ]; then
 	readcustom
 fi
 if [ "$response" == "1" ] && [ "$mode" == 1 ]; then
+	echo -e '\e[1;40m'
 	clear
 	echo "Script Aborted By User"	
 	exit
 fi
 
 if [ "$response" == "1" ] && [ "$mode" == 2 ]; then
-	echo " Script Aborted By User"
+	echo -e '\e[1;40m'
 	clear
+	echo " Script Aborted By User"
 	exit
 fi
 
@@ -172,6 +174,7 @@ fi
 
 readmain
 
+echo -e '\e[1;40m'
 clear
 
 
