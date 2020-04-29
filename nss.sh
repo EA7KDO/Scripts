@@ -10,6 +10,13 @@
 ###################################################################
 sudo mount -o remount,rw /
 export NCURSES_NO_UTF8_ACS=1
+declare -i mode=0
+declare -r TAB="`echo -e "\t"`"
+linetext=""
+fname=""
+## mode=0 - Addm New Line to Custom
+## mode=1 - Accept Main File
+## mode=2 - Accept Custom File
 
 #use_colors = ON
 #screen_color = (WHITE,BLUE,ON)
@@ -20,78 +27,154 @@ sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
 echo -e '\e[1;44m'
 
-# useradd1.sh - A simple shell script to display the form dialog on screen
-# set field names i.e. shell variables
-name=""
-addr=""
-port=""
-passwd=""
+#m1=$(sudo sed -n "/\t$m2/p" /usr/local/etc/DMR_Hosts.txt)
+function parseline
+{
+clear
+ p1=$(echo "$linetext" | cut -d$'\t' -f1)
+ p2=$(echo "$linetext" | cut -d$'\t' -f3)
+ p3=$(echo "$linetext" | cut -d$'\t' -f4)
+ p4=$(echo "$linetext" | cut -d$'\t' -f6)
+ p5=$(echo "$linetext" | cut -d$'\t' -f7)
+echo "$p1${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
+}
+
+function addline
+{
+# display values just entered
+	m1=$(echo "$VALUES" | sed -n 1p)
+	m2=$(echo "$VALUES" | sed -n 2p)
+	m3=$(echo "$VALUES" | sed -n 3p)
+	m4=$(echo "$VALUES" | sed -n 4p)
+	m5=$(echo "$VALUES" | sed -n 5p)
+	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+
+	sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
+#	sudo pistar-update
+#	sudo reboot
+
+}
+function readmain
+{
+echo "ReadMain"
+fname="/usr/local/etc/DMR_Hosts.txt"
+mode=1
+linetext=$(tail /usr/local/etc/DMR_Hosts.txt | sed -n '/'"$SVR"'/p')
+	if [ -z "$linetext" ]; then
+		echo "Nothing Found for $SVR"
+		readcustom
+	else
+		echo "$linetext"
+		parseline
+		displayline
+	fi
+
+}
+function readcustom
+{
+fname="/root/DMR_Hosts.txt"
+mode=2
+linetext=$(tail /root/DMR_Hosts.txt | sed -n '/'"$SVR"'/p')
+		echo "$linetext"
+		parseline
+		displayline
+}
+
+function displayline
+{
+name="$p1"
+sid="$p2"
+addr="$p3"
+passwd="$p4"
+port="$p5"
 
 # open fd
 exec 3>&1
 
 # Store data to $VALUES variable
 VALUES=$(dialog --ok-label "Submit" \
-	  --backtitle "TGIF Network Special Access" \
-	  --title "Enter Required Fields" \
-	  --form "Special Access Fields" \
-18 50 0 \
+	  --backtitle "TGIF Network Special Access Script - VE3RD" \
+	  --title "Server Access Data Fields in $fname" \
+	  --form "OK to Edit Data Fields or Cancel to Abort Script" \
+18 75 0 \
 	"     Server Name:" 1 1	"$name" 	1 18 25 0 \
-	"  Server Address:" 2 1	"$addr"  	2 18 25 0 \
-	"            Port:" 3 1	"$port"  	3 18 25 0 \
+	"       Server ID:" 2 1	"$sid"  	2 18 25 0 \
+	"  Server Address:" 3 1	"$addr"  	3 18 25 0 \
 	"        Password:" 4 1	"$passwd" 	4 18 25 0 \
+	"            Port:" 5 1	"$port"  	5 18 25 0 \
 2>&1 1>&3)
+response=$?
 
-# close fd
-exec 3>&-
-
-clear
-# display values just entered
 m1=$(echo "$VALUES" | sed -n 1p)
 m2=$(echo "$VALUES" | sed -n 2p)
 m3=$(echo "$VALUES" | sed -n 3p)
 m4=$(echo "$VALUES" | sed -n 4p)
-
-echo "    Server Name : $m1"
-echo " Server Address : $m2"
-echo "     Server Port: $m3"
-echo "  Server Passwd : $m4"
+m5=$(echo "$VALUES" | sed -n 5p)
+textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 
-
-declare -r TAB="`echo -e "\t"`"
-#echo -e "A${TAB}B"
-
-textstr="$m1${TAB}${TAB}0000${TAB}$m2${TAB}${TAB}$m4${TAB}$m3"
-#echo "$textstr"
-
-m1=$(sudo sed -n "/\t$m2/p" /usr/local/etc/DMR_Hosts.txt)
-
-if [ -z "$m1" ]; then
-	echo " The Data Entry is  missing from /usr/local/etc/DMR_Hosts.txt"
-	echo " Checking Root DMR_Hosts.txt"
-else
-	echo " /usr/local/etc/DMR_Hosts.txt is Fine"
-	echo " No Action Taken"
+if [ "$response" == "0" ] && [ "$mode" == 1 ]; then
+	clear
+	echo "Edit Data Line Chosen"	
+	readcustom
+fi
+if [ "$response" == "1" ] && [ "$mode" == 1 ]; then
+	clear
+	echo "Script Aborted By User"	
 	exit
 fi
 
-m2=$(sudo sed -n "/\t$m2/p" /root/DMR_Hosts.txt)
-
-if [ -z "$m2" ]; then
-		echo "/root/DMR_Hosts.txt Updated "
-		echo "Now doing a pstar-update and reboot"
-
-		sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
-		sudo pistar-update
-		sudo reboot
-
-else
-		echo " /root/DMR_Host.txt is fine"
-		echo "Doing a pistar-update to load the file"
-		sudo pistar-update
-		sudo reboot
-
+if [ "$response" == "1" ] && [ "$mode" == 2 ]; then
+	echo " Script Aborted By User"
+	clear
+	exit
 fi
+
+if [ "$response" == "0" ] && [ "$mode" == 2 ]; then
+	if [ -z "$p3" ]; then
+		echo " Adding Data Line"
+		addline
+		echo "Added Data Line to /root/DMR_Hosts.txt"	
+	else
+		echo "Removing Last Line and Adding New Data"
+	 	sudo sed -i '$d' /root/DMR_Hosts.txt 
+		addline
+	fi
+fi
+response=""
+# close fd
+exec 3>&-
+
+}
+
+#######################################################################
+# show an inputbox
+SVR=$(dialog --title "Test for Existence of Server Hostname" \
+--backtitle "New TGIF Server Access Script - VE3RD" \
+--inputbox "Enter the Server Address " 8 60 3>&1 1>&2 2>&3 3>&- )
+
+# get response
+response=$?
+if [ "$response" == "1" ]; then
+	clear
+	echo "Script Aborted By User" 
+	exit 
+  exit
+fi
+if [ -z "$SVR" ]; then
+clear
+echo " No Data Entered - Script Aborted"
+exit
+fi
+#echo "Response=$response"
+# get data stored in $OUPUT using input redirection
+#SVR=$(<$OUTPUT)
+
+readmain
+
+clear
+
+
+
 
 
