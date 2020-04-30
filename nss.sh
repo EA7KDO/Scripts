@@ -50,8 +50,18 @@ function addline
 	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 	sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
-	sudo pistar-update
-	sudo reboot
+	sudo mount -o remount,rw /
+	echo -e '\e[1;40m'
+	clear
+        echo "Updating Hostfiles..."
+        /usr/local/sbin/HostFilesUpdate.sh 
+        if [ "$?" == "0" ]; then
+		echo "Host Files Successfully Updated"	
+	else
+		echo "Host File Update Failed!"
+	fi
+	echo ""
+
 
 }
 function readmain
@@ -158,24 +168,20 @@ SVR=$(dialog --title "Test for Existence of Server Hostname" \
 # get response
 response=$?
 if [ "$response" == "1" ]; then
+	echo -e '\e[1;40m'
 	clear
 	echo "Script Aborted By User" 
 	exit 
-  exit
 fi
 if [ -z "$SVR" ]; then
-clear
-echo " No Data Entered - Script Aborted"
-exit
+	echo -e '\e[1;40m'
+	clear
+	echo " No Data Entered - Script Aborted"
+	exit
 fi
-#echo "Response=$response"
-# get data stored in $OUPUT using input redirection
-#SVR=$(<$OUTPUT)
 
 readmain
 
-echo -e '\e[1;40m'
-clear
 
 
 
