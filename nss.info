@@ -1,0 +1,29 @@
+Instruction Set For The NSS.sh Host File Editor Script
+
+1) First Screen
+	Enter the Server Address as xxx.yyy.zzz or yyy.zzz
+	It will search for the first part of the script that follows a tab
+	ie 'tgif' will find the old server, 'prime' will find the new server if it exists
+	Press 'Submit'
+	
+2) Second Screen
+	This will display the data in the main DMR_Hosts File /usr/local/etc/DMR_Hosts.txt
+	If this data is correct, press the 'Cancel' button to abort the Script
+	If it is blank or needs to be edited prss the 'Submit" button
+	DO NOT Edit This Screen
+
+3) Third Screen
+	This will display the data in the custom DMR_Hosts File /root/DMR_Hosts.txt
+	If this data is correct press the 'Submit' button
+	If this data is NOT correct then edit the required fields
+	There MUST not be any spaces in any of the fields
+	The words in the server name should be separated with the underscore character
+	When done press the 'Submit' Button
+	Use The Up/Down arrows to navigate through the text fields
+	The Tab Key moves you from the text boxes to the Submit button to the Cancel Button
+	Pressing your keytboard Enter key will immediately accept the data in the fields and
+	start processing the update
+
+The script will now exit and run the pistar-update command
+
+Press the Tab Key to highlight the OK Button and press Enter to bring up the First Screen
