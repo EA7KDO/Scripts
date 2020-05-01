@@ -72,12 +72,20 @@ function displayline
 	# open fd
 	exec 3>&1
 
+txt="\nData Field Editor Rule Set:\n\n
+1) No Spaces Allowed in the Server Name - Use The UnderScore Character\n
+2) Edit the fields as required.\n
+3) Press 'OK' or keyboard 'Enter' when finished editing \n
+4) Cancel will abort the script\n
+5) Navigate through the Text Boxes with the up/down arrows]n
+6) The Tab will rotate the cursor through the text box Group, OK and Cancel"
+
 	# Store data to $VALUES variable
 	VALUES=$(dialog --ok-label "OK" \
 	  --backtitle "TGIF Network Special Access Script - VE3RD" \
 	  --title "Server Access Data Fields in $fname" \
-	  --form "OK to Edit Data Fields or Cancel to Abort Script (No Spaces Anywhere)" 18 75 0 \
-	"     Server Name:" 1 1	"$name" 	1 18 25 0 \
+	  --form "$txt" 20 75 0 \
+	"     Server Name:" 1 1	"$name"       	1 18 25 0 \
 	"       Server ID:" 2 1	"$sid"  	2 18 25 0 \
 	"  Server Address:" 3 1	"$addr"  	3 18 25 0 \
 	"        Password:" 4 1	"$passwd" 	4 18 25 0 \
