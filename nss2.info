@@ -1,0 +1,28 @@
+Instruction Set For The NSS2.sh TGIF Host File Editor Script
+
+There are Three Stages of processing in this script
+
+1) The script searches for the word 'prime' preceeded with a tab character and 
+	displays the result.
+	If this information is correct click on the 'YES' buton, and the Script will Abort.
+	If this information is NOT correct, click on the 'NO' button and the Edit Screen will appear
+
+2) Edit Screen
+	This will display the data in the custom DMR_Hosts File /root/DMR_Hosts.txt
+	If this data is correct press the 'Submit' button and the Script will Abort
+	If this data is NOT correct then edit the required fields and 
+	press either the Submit Button or the keyboard Enter key
+
+	There MUST not be any spaces in any of the fields
+	The words in the server name should be separated with the underscore character
+	When done press the 'Submit' Button
+
+	Use The Up/Down arrows to navigate through the text fields
+	The Tab Key moves you from the text boxes group to the Submit Button to the Cancel Button
+	While in one of the text fields, Pressing your keytboard Enter key will immediately accept 
+	the data in ALL fields and start processing the update
+
+3) Processing
+	The script will now exit and run the pistar-update command to rebuild the DMR_Hosts.txt File
+
+Press the Tab Key to highlight the OK Button and press Enter to bring up the First Screen
