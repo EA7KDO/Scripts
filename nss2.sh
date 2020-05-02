@@ -14,9 +14,18 @@ declare -i mode=0
 declare -r TAB="`echo -e "\t"`"
 linetext=""
 fname=""
+SVR="prime"
+
 sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
-sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+#sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sudo sed -i '/screen_color = /c\screen_color = (BLACK,CYAN,ON)' ~/.dialogrc
 sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
+
+export NEWT_COLORS='
+window=,cyan
+border=white,blue
+button=yellow,red
+'
 
 echo -e '\e[1;44m'
 
@@ -71,21 +80,16 @@ function displayline
 
 	# open fd
 	exec 3>&1
-
-txt="\nData Field Editor Rule Set:\n\n
-1) No Spaces Allowed in the Server Name - Use The UnderScore Character\n
-2) Edit the fields as required.\n
-3) Press 'OK' or keyboard 'Enter' when finished editing \n
-4) Cancel will abort the script\n
-5) Navigate through the Text Boxes with the up/down arrows]n
-6) The Tab will rotate the cursor through the text box Group, OK and Cancel"
+header="Press OK to Edit Data Fields or Cancel to Abort Script \n
+    - Do Not Use Spaces in the Server Name Field \n
+    - Use the UnderScore to separate words"
 
 	# Store data to $VALUES variable
 	VALUES=$(dialog --ok-label "OK" \
 	  --backtitle "TGIF Network Special Access Script - VE3RD" \
 	  --title "Server Access Data Fields in $fname" \
-	  --form "$txt" 20 75 0 \
-	"     Server Name:" 1 1	"$name"       	1 18 25 0 \
+	  --form "$header" 18 75 0 \
+	"     Server Name:" 1 1	"$name" 	1 18 25 0 \
 	"       Server ID:" 2 1	"$sid"  	2 18 25 0 \
 	"  Server Address:" 3 1	"$addr"  	3 18 25 0 \
 	"        Password:" 4 1	"$passwd" 	4 18 25 0 \
@@ -188,9 +192,7 @@ function readcustom
 		displayline
 }
 
-whiptail --backtitle "Curtesy of VE3RD" --title "NSS.sh Hostfile Editor Instruction Set" --msgbox --scrolltext --ok-button "OK"  "$(cat nss2.info)" 35 145 3>&1 1>&2 2>&3
-SVR="prime"
-
+whiptail --msgbox  "$(cat nss2.info)" --backtitle "Curtesy of VE3RD" --title "NSS.sh Hostfile Editor Instruction Set"   35 145 3>&1 1>&2 2>&3
 readmain
 
 
