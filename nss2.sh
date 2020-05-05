@@ -33,10 +33,10 @@ function parseline
 {
 	clear
  	p1a=$(echo "$linetext" | cut -d$'\t' -f1)
- 	p2=$(echo "$linetext" | cut -d$'\t' -f3)
- 	p3=$(echo "$linetext" | cut -d$'\t' -f4)
- 	p4=$(echo "$linetext" | cut -d$'\t' -f6)
- 	p5=$(echo "$linetext" | cut -d$'\t' -f7)
+ 	p2=$(echo "$linetext" | cut -d$'\t' -f4)
+ 	p3=$(echo "$linetext" | cut -d$'\t' -f5)
+ 	p4=$(echo "$linetext" | cut -d$'\t' -f7)
+ 	p5=$(echo "$linetext" | cut -d$'\t' -f8)
 
 	p1=$(echo "$p1a" | sed -e 's/ /_/g')
 	echo "$p1${TAB}${TAB}${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
@@ -75,7 +75,7 @@ function displayline
 	name="New_Server"
 	sid="0000"
 	addr="$p3"
-	passwd="$p4"
+	passwd="passw0rd"
 	port="62031"
 
 	# open fd
