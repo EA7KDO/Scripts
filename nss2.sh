@@ -39,7 +39,7 @@ function parseline
  	p5=$(echo "$linetext" | cut -d$'\t' -f7)
 
 	p1=$(echo "$p1a" | sed -e 's/ /_/g')
-	echo "$p1${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
+	echo "$p1${TAB}${TAB}${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
 }
 
 function addline
@@ -54,7 +54,7 @@ function addline
 	m1=$(echo "$m1a" | sed -e 's/ /_/g')
 
 
-	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 	sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
 	sudo mount -o remount,rw /
@@ -72,7 +72,7 @@ function addline
 
 function displayline
 {
-	name="Prime_TGIF_Network"
+	name="New_Server"
 	sid="0000"
 	addr="$p3"
 	passwd="$p4"
@@ -105,7 +105,7 @@ header="Press OK to Edit Data Fields or Cancel to Abort Script \n
 
 	m1=$(echo "$m1" |sed -e 's/ /_/g')
 	m2="0000"
-	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 
 	if [ "$response" == "0" ] && [ "$mode" == 1 ]; then
