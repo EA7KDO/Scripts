@@ -114,7 +114,10 @@ if [ -z "$p1" ]; then
 fi
 	name="$p1"
 	sid="0000"
-#	addr="prime.tgif.network"
+
+if [ -z "$p3" ]; then
+	p3="prime.tgif.network"
+fi
 	addr="$p3"
 	passwd="passw0rd"
 	port="62031"
