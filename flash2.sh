@@ -1,12 +1,12 @@
 #!/bin/bash
-###############################################################
-#  This script will flash the TFT File into The Nextion Screen #
-#                                                             #
-#  VE3RD                                      2020/04/07      #
-###############################################################
+#################################################################
+#  This script will flash the TFT File into The Nextion Screen  #
+#                                                             	#
+#  VE3RD                                      2020/05/12      	#
+#################################################################
 set -o errexit
 set -o pipefail
-
+ver="20200512"
 export NCURSES_NO_UTF8_ACS=1
 
 ## Programmed Shutdown
@@ -92,7 +92,7 @@ fi
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="Nextion Screen Flash Tool - VE3RD"
+BACKTITLE="Nextion Screen Flash Tool - VE3RD $ver"
 TITLE="Flash Selected Screen Type"
 MENU="Select your Screen Type from List Found"
 
@@ -176,7 +176,7 @@ if [ "$tst" > 0 ]; then
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="Nextion Screen Flash Tool - VE3RD"
+BACKTITLE="Nextion Screen Flash Tool - VE3RD $ver"
 TITLE="You Have Chosen to Flash $scn"
 MENU="Select Abort or Proceed"
 

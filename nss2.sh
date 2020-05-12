@@ -6,7 +6,7 @@
 #  and add the required line to /root/DMR_Hosts.txt if it was 	     #
 #  not found in ether file				 	     #
 #								     #
-#  VE3RD                               			2020-04-24   #
+#  VE3RD                               			2020-05-12   #
 ######################################################################
 sudo mount -o remount,rw /
 export NCURSES_NO_UTF8_ACS=1
@@ -17,7 +17,7 @@ declare -i slen
 linetext=""
 fname=""
 SVR="prime"
-
+ver="20200512"
 sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 #sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sudo sed -i '/screen_color = /c\screen_color = (BLACK,CYAN,ON)' ~/.dialogrc
@@ -110,7 +110,7 @@ fi
 function displayline
 {
 if [ -z "$p1" ]; then
-	p1="New_Server"
+	p1="Prime_TGIF_Network"
 fi
 	name="$p1"
 	sid="0000"
@@ -126,7 +126,7 @@ header="Press OK to Edit Data Fields or Cancel to Abort Script \n
 
 	# Store data to $VALUES variable
 	VALUES=$(dialog --ok-label "OK" \
-	  --backtitle "TGIF Network Special Access Script - VE3RD" \
+	  --backtitle "TGIF Network Special Access Script - VE3RD $ver" \
 	  --title "Server Access Data Fields in $fname" \
 	  --form "$header" 18 75 0 \
 	"     Server Name:" 1 1	"$name" 	1 18 25 0 \
@@ -231,7 +231,7 @@ function readcustom
 		displayline
 }
 
-whiptail --msgbox  "$(cat nss2.info)" --backtitle "Curtesy of VE3RD" --title "NSS.sh Hostfile Editor Instruction Set"   35 145 3>&1 1>&2 2>&3
+whiptail --msgbox  "$(cat nss2.info)" --backtitle "Curtesy of VE3RD $ver" --title "NSS.sh Hostfile Editor Instruction Set"   35 145 3>&1 1>&2 2>&3
 readmain
 
 

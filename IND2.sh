@@ -3,10 +3,11 @@
 #  This script will automate the process of                #
 #  Installing the Nextion Driver 			   #
 #							   #
-#  VE3RD                                      2020/02/12   #
+#  VE3RD                                      2020/05/12   #
 ############################################################
 set -o errexit
 set -o pipefail
+ver="20200512"
 export NCURSES_NO_UTF8_ACS=1
 
 if [ -f ~/.dialog ]; then
@@ -79,7 +80,7 @@ fi
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD"
+BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
 TITLE="Main Menu - Nextion Driver Installation"
 MENU="Select your Installation Mode"
 
