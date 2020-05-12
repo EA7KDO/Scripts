@@ -41,7 +41,7 @@ function parseline
 if [ "$slen" -le 24 ]; then
  	p2=$(echo "$linetext" | cut -d$'\t' -f3)
  	p3=$(echo "$linetext" | cut -d$'\t' -f4)
- 	p4=$(echo "$linetext" | cut -d$'\t' -f5)
+ 	p4=$(echo "$linetext" | cut -d$'\t' -f6)
  	p5=$(echo "$linetext" | cut -d$'\t' -f7)
 
 fi
@@ -73,6 +73,13 @@ function addline
 	
 	m1=$(echo "$m1a" | sed -e 's/ /_/g')
 
+if [ -z "$m3" ]; then
+echo -e '\e[1;44m'
+clear
+echo " Missing Address - Script Aborting!"
+exit
+fi
+
 slen=$(expr length "$m1")
 
 if [ "$slen" -le 24 ]; then
@@ -102,13 +109,15 @@ fi
 
 function displayline
 {
+if [ -z "$p1" ]; then
+	p1="New_Server"
+fi
 	name="$p1"
 	sid="0000"
 #	addr="prime.tgif.network"
 	addr="$p3"
 	passwd="passw0rd"
 	port="62031"
-
 	# open fd
 	exec 3>&1
 header="Press OK to Edit Data Fields or Cancel to Abort Script \n
