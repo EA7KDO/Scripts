@@ -12,11 +12,11 @@ export NCURSES_NO_UTF8_ACS=1
 ## Programmed Shutdown
 function exitcode
 {
+       clear 
         echo "Script Execution Failed "
         echo "$scn"
         echo "$errtext"
 	tput sgr0 
-       clear 
        exit
 
 }
@@ -43,6 +43,7 @@ function flashscreen
 			echo "Rebooting ......"
 			sudo reboot
 }
+
 sudo mount -o remount,rw /
 
 errtxt="Nothing"
@@ -82,6 +83,10 @@ if [ -z "$found1" ]; then
  errtext=" Sorry!  = Cannot find a Screen type in /usr/local/etc/"
  echo " Script Aborted!"
  exitcode
+fi
+if [ ! -f /usr/local/etc/NX*.tft ]; then
+    errtext="Screen File not found!"
+	exitcode
 fi
 
 HEIGHT=15

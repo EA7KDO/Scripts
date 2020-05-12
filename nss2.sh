@@ -12,6 +12,8 @@ sudo mount -o remount,rw /
 export NCURSES_NO_UTF8_ACS=1
 declare -i mode=0
 declare -r TAB="`echo -e "\t"`"
+declare -i slen
+
 linetext=""
 fname=""
 SVR="prime"
@@ -39,6 +41,19 @@ function parseline
  	p5=$(echo "$linetext" | cut -d$'\t' -f8)
 
 	p1=$(echo "$p1a" | sed -e 's/ /_/g')
+
+slen=$(expr length "$p1")
+
+if [ "$slen" -le 24 ]; then
+	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
+if [ "$slen" -le 16 ]; then
+	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
+if [ "$slen" -le 8 ]; then
+	textstr="$m1${TAB}${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
+
 	echo "$p1${TAB}${TAB}${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
 }
 
@@ -53,8 +68,17 @@ function addline
 	
 	m1=$(echo "$m1a" | sed -e 's/ /_/g')
 
+slen=$(expr length "$m1")
 
+if [ "$slen" -le 24 ]; then
+	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
+if [ "$slen" -le 16 ]; then
 	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
+if [ "$slen" -le 8 ]; then
+	textstr="$m1${TAB}${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
+fi
 
 	sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
 	sudo mount -o remount,rw /
@@ -68,13 +92,14 @@ function addline
 		echo "Host File Update Failed!"
 	fi
 	echo ""
+
 }
 
 function displayline
 {
 	name="New_Server"
 	sid="0000"
-	addr="$p3"
+	addr="prime.tgif.network"
 	passwd="passw0rd"
 	port="62031"
 
@@ -105,7 +130,6 @@ header="Press OK to Edit Data Fields or Cancel to Abort Script \n
 
 	m1=$(echo "$m1" |sed -e 's/ /_/g')
 	m2="0000"
-	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 
 
 	if [ "$response" == "0" ] && [ "$mode" == 1 ]; then
