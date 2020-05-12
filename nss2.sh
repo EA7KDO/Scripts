@@ -35,25 +35,30 @@ function parseline
 {
 	clear
  	p1a=$(echo "$linetext" | cut -d$'\t' -f1)
+	p1=$(echo "$p1a" | sed -e 's/ /_/g')
+	slen=$(expr length "$p1")
+
+if [ "$slen" -le 24 ]; then
+ 	p2=$(echo "$linetext" | cut -d$'\t' -f3)
+ 	p3=$(echo "$linetext" | cut -d$'\t' -f4)
+ 	p4=$(echo "$linetext" | cut -d$'\t' -f5)
+ 	p5=$(echo "$linetext" | cut -d$'\t' -f7)
+
+fi
+if [ "$slen" -le 16 ]; then
  	p2=$(echo "$linetext" | cut -d$'\t' -f4)
  	p3=$(echo "$linetext" | cut -d$'\t' -f5)
  	p4=$(echo "$linetext" | cut -d$'\t' -f7)
  	p5=$(echo "$linetext" | cut -d$'\t' -f8)
 
-	p1=$(echo "$p1a" | sed -e 's/ /_/g')
-
-slen=$(expr length "$p1")
-
-if [ "$slen" -le 24 ]; then
-	textstr="$m1${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
-fi
-if [ "$slen" -le 16 ]; then
-	textstr="$m1${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
 fi
 if [ "$slen" -le 8 ]; then
-	textstr="$m1${TAB}${TAB}${TAB}${TAB}$m2${TAB}$m3${TAB}${TAB}$m4${TAB}$m5"
-fi
+ 	p2=$(echo "$linetext" | cut -d$'\t' -f5)
+ 	p3=$(echo "$linetext" | cut -d$'\t' -f6)
+ 	p4=$(echo "$linetext" | cut -d$'\t' -f8)
+ 	p5=$(echo "$linetext" | cut -d$'\t' -f9)
 
+fi
 	echo "$p1${TAB}${TAB}${TAB}$p2${TAB}$p3${TAB}$p4${TAB}$p5"
 }
 
@@ -97,9 +102,10 @@ fi
 
 function displayline
 {
-	name="New_Server"
+	name="$p1"
 	sid="0000"
-	addr="prime.tgif.network"
+#	addr="prime.tgif.network"
+	addr="$p3"
 	passwd="passw0rd"
 	port="62031"
 
