@@ -13,7 +13,7 @@ export NCURSES_NO_UTF8_ACS=1
 if [ -f ~/.dialog ]; then
  j=1
 else
- dialog --create-rc ~/.dialogrc
+ sudo dialog --create-rc ~/.dialogrc
 fi
 #use_colors = ON
 #screen_color = (WHITE,BLUE,ON)
