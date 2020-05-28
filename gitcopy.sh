@@ -141,7 +141,7 @@ getea7kdo
 if [ ! -d /usr/local/etc/Nextion_Support ]; then
 	sudo mkdir /usr/local/etc/Nextion_Support
 else
-       sudo rm  /usr/local/etc/Nextion_Support/*
+       sudo rm /usr/local/etc/Nextion_Support/*
 fi
 
 sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
@@ -162,7 +162,7 @@ if [ "$fb" ]; then
 fi
 
 if [ -f /usr/local/etc/$model$tft ]; then
-	sudo rm /usr/local/etc/NX*K*.tft
+	sudo rm /usr/local/etc/NX*.tft
 fi
 sudo cp /home/pi-star/Nextion_Temp/$model$tft /usr/local/etc/
 
