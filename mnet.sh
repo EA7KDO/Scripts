@@ -55,7 +55,7 @@ m5="62031"
 
         echo "Updating Hostfiles..."
 
-##        sudo /usr/local/sbin/HostFilesUpdate.sh
+        sudo /usr/local/sbin/HostFilesUpdate.sh
 
         if [ "$?" == "0" ]; then
                 echo "Host Files Successfully Updated"
