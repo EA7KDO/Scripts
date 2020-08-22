@@ -4,10 +4,11 @@
 #  This Script will install The MNet Security Password into             #
 #  /root/DMR_Hosts.txt and run the Pi-Star Host File Updatde Routine    #
 #  and add the required line to /root/DMR_Hosts.txt if it was           #
-#  not found in ether file                                              #
+#  not found in ether file.						#
+#  Place the Security Password into /home/pi-star/MNet.txt		#
 #                                                                       #
-#  VE3RD                                                2020-05-12      #
-###########################################################333###########
+#  VE3RD                                                2020-08-22      #
+#########################################################################
 export NCURSES_NO_UTF8_ACS=1
 declare -i slen
 
