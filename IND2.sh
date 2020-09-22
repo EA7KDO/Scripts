@@ -22,10 +22,9 @@ sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
-
-
 echo -e '\e[1;44m'
 clear
+
 sudo mount -o remount,rw /
 homedir=/home/pi-star/
 curdir=$(pwd)
@@ -44,21 +43,31 @@ continue=0
 
 function installnxd
 {
+        echo "Stopping services - Reboot Required after This Script Finishes"
+        sudo pistar-watchdog.service stop > /dev/null
+        sudo systemctl stop cron.service
+        sudo systemctl stop nextiondriver.service
+
+        echo "Services Stopped"
+
 		echo " "
 		echo "STARTING NEXTION DRIVER INSTALLATION"
 		echo " "
 		echo "Remove Existing Nextion Driver"
+sudo mount -o remount,rw /
 
 		#Remove the Nextion Driver if it exists
                 if [ -f /usr/local/bin/NextionDriver ] ; then
 			sudo rm /usr/local/bin/NextionDriver
 		fi
+sudo mount -o remount,rw /
 
 		#Download the driver to /Nextion/
 		echo "Remove /Nextion Directory"
                 if [ -d /Nextion ] ; then
                         sudo rm -R /Nextion
                 fi
+sudo mount -o remount,rw /
 		echo "Get Files from github"
 		if [ -d /Nextion ]; then
 			rm -d /Nextion
@@ -66,6 +75,7 @@ function installnxd
 		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
 		#Run the Install Script
 		echo "Run the Install Script"
+sudo mount -o remount,rw /
 		sudo /Nextion/install.sh 
 		
     		exit
@@ -102,6 +112,9 @@ echo -e '\e[1;44m'
 case $CHOICE in
         1)
             echo "You Chose Pi-Star Update + Install"
+        sudo systemctl stop cron.service
+
+		sudo mount -o remount,rw /
 		sudo pistar-update
 		sudo mount -o remount,rw /
 		installnxd
@@ -124,6 +137,7 @@ clear
 
 echo " "
 
+sudo mount -o remount,rw /
 
 	sudo chmod 755 /usr/local/sbin/nextion*
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
@@ -148,6 +162,8 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 clear
+sudo mount -o remount,rw /
+
 case $CHOICE in
 
          1)   		echo "Setting the Port to TTL Adapter, and ScreenLayout to 3 ON7LDSHS LS "
@@ -173,6 +189,7 @@ case $CHOICE in
         echo " "
 
         m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
+sudo mount -o remount,rw /
 
         if [ -z "$m1" ]; then
                 sudo mount -o remount,rw /
@@ -215,11 +232,13 @@ case $CHOICE in
                 ;;
         esac
 
+sudo mount -o remount,rw /
 
 	echo "Installing BC"
 	sudo apt-get install bc
 
 	sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
 	sudo rm -R /temp
 	sudo sh -c 'echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw'
@@ -229,6 +248,7 @@ case $CHOICE in
 	echo "Nextion Driver Installation Completed"
 	echo "Rebooting Pi-Star"
 	#rm -R /Nextion
+sudo mount -o remount,rw /
         
 	if [ -f /home/pi-star/ndis.txt ]; then
 	sudo  rm /home/pi-star/ndis.txt
