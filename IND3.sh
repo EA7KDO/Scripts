@@ -140,8 +140,9 @@ clear
 echo " "
 
 sudo mount -o remount,rw /
-
+echo "Enabling /usr/local/sbin/nextiondriver.service"
 	sudo chmod 755 /usr/local/sbin/nextion*
+echo "Rnable complete"
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/NextionDriver/s/\(LogLevel=\).*/\12/m;P;d'  /etc/mmdvmhost                        
