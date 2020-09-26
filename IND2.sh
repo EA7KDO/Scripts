@@ -7,6 +7,8 @@
 ############################################################
 set -o errexit
 set -o pipefail
+sudo mount -o remount,rw /
+
 export NCURSES_NO_UTF8_ACS=1
 
 if [ -f ~/.dialog ]; then
