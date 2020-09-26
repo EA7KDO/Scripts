@@ -20,9 +20,9 @@ fi
 #use_colors = ON
 #screen_color = (WHITE,BLUE,ON)
 #title_color = (YELLOW,RED,ON)
-sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
-sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
-sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
+sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
+sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
 echo -e '\e[1;44m'
 clear
@@ -45,12 +45,12 @@ continue=0
 
 function installnxd
 {
-        echo "Stopping services - Reboot Required after This Script Finishes"
-        sudo pistar-watchdog.service stop > /dev/null
-        sudo systemctl stop cron.service
-        sudo systemctl stop nextiondriver.service
+#        echo "Stopping services - Reboot Required after This Script Finishes"
+#        sudo pistar-watchdog.service stop > /dev/null
+#        sudo systemctl stop cron.service
+#        sudo systemctl stop nextiondriver.service
 
-        echo "Services Stopped"
+#        echo "Services Stopped"
 
 		echo " "
 		echo "STARTING NEXTION DRIVER INSTALLATION"
@@ -72,7 +72,7 @@ sudo mount -o remount,rw /
 sudo mount -o remount,rw /
 		echo "Get Files from github"
 		if [ -d /Nextion ]; then
-			rm -d /Nextion
+			sudo rm -d /Nextion
 		fi
 		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
 		#Run the Install Script
@@ -240,7 +240,6 @@ sudo mount -o remount,rw /
 	sudo apt-get install bc
 
 	sudo mount -o remount,rw /
-sudo mount -o remount,rw /
 
 	sudo rm -R /temp
 	sudo sh -c 'echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw'
