@@ -88,7 +88,8 @@ MENU="Select your Installation Mode"
 OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
          2 "Install Nextion Driver - No Update"
          3 "Continue after Reboot from Option 1 or 2"
-	 4 "Quit")
+	 4 "Checking Nexgion Driver Installation"
+	 5 "Quit")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -115,10 +116,16 @@ case $CHOICE in
             echo "You Chose Continue after Reboot"
 		continue=1
             ;;
-	4)   echo " You Chose to Quit"
-		exit
+        4)
+            echo "Checking Nextion Driver Installation"
+                sudo /Nextion/check_installation.sh
+                exit
+           ;;
+        5)   echo " You Chose to Quit"
+                exit
 
-	;;
+        ;;
+
 esac
 
 clear
