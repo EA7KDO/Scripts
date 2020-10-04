@@ -59,12 +59,6 @@ preparedir2 () {
 }
 function installnxd
 {
-        echo "Stopping services - Reboot Required after This Script Finishes"
-        sudo pistar-watchdog.service stop > /dev/null
-        sudo systemctl stop cron.service
-        sudo systemctl stop nextiondriver.service
-
-        echo "Services Stopped"
 
 		echo " "
 		echo "STARTING NEXTION DRIVER INSTALLATION"
