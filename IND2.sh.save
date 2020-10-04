@@ -3,17 +3,18 @@
 #  This script will automate the process of                #
 #  Installing the Nextion Driver 			   #
 #							   #
-#  VE3RD                                      2020/05/12   #
+#  VE3RD                                      2020/02/12   #
 ############################################################
 set -o errexit
 set -o pipefail
-ver="20200512"
+sudo mount -o remount,rw /
+
 export NCURSES_NO_UTF8_ACS=1
 
 if [ -f ~/.dialog ]; then
  j=1
 else
- sudo dialog --create-rc ~/.dialogrc
+ dialog --create-rc ~/.dialogrc
 fi
 #use_colors = ON
 #screen_color = (WHITE,BLUE,ON)
@@ -24,7 +25,6 @@ sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
 echo -e '\e[1;44m'
 clear
-
 sudo mount -o remount,rw /
 homedir=/home/pi-star/
 curdir=$(pwd)
@@ -41,45 +41,40 @@ echo " and select 'Continue' in the following menu"
 echo " "
 continue=0
 
-function preparedir
-{
-                if [ -d /Nextion ] ; then
-                        sudo rm -R /Nextion
-                fi
-		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
-}
+        4)
+            echo "Checking Nextion Driver Installation"
+                sudo /Nextion/check_installation.sh
+                exit
+           ;;
+        5)   echo " You Chose to Quit"
+                exit
+
+        ;;
+
 function installnxd
 {
-        echo "Stopping services - Reboot Required after This Script Finishes"
-        sudo pistar-watchdog.service stop > /dev/null
-        sudo systemctl stop cron.service
-        sudo systemctl stop nextiondriver.service
-
-        echo "Services Stopped"
-
 		echo " "
 		echo "STARTING NEXTION DRIVER INSTALLATION"
 		echo " "
 		echo "Remove Existing Nextion Driver"
-sudo mount -o remount,rw /
 
 		#Remove the Nextion Driver if it exists
                 if [ -f /usr/local/bin/NextionDriver ] ; then
 			sudo rm /usr/local/bin/NextionDriver
 		fi
-sudo mount -o remount,rw /
 
 		#Download the driver to /Nextion/
 		echo "Remove /Nextion Directory"
                 if [ -d /Nextion ] ; then
                         sudo rm -R /Nextion
                 fi
-sudo mount -o remount,rw /
 		echo "Get Files from github"
-		preparedir
+		if [ -d /Nextion ]; then
+			rm -d /Nextion
+		fi
+		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
 		#Run the Install Script
 		echo "Run the Install Script"
-sudo mount -o remount,rw /
 		sudo /Nextion/install.sh 
 		
     		exit
@@ -94,14 +89,14 @@ fi
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=5
-BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
+BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD"
 TITLE="Main Menu - Nextion Driver Installation"
 MENU="Select your Installation Mode"
 
 OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
          2 "Install Nextion Driver - No Update"
          3 "Continue after Reboot from Option 1 or 2"
-	 4 "Check Nextion Driver Instllation"
+	 4 "Checking Nexgion Driver Installation"
 	 5 "Quit")
 
 CHOICE=$(dialog --clear \
@@ -117,9 +112,6 @@ echo -e '\e[1;44m'
 case $CHOICE in
         1)
             echo "You Chose Pi-Star Update + Install"
-	        sudo systemctl stop cron.service
-
-		sudo mount -o remount,rw /
 		sudo pistar-update
 		sudo mount -o remount,rw /
 		installnxd
@@ -132,23 +124,23 @@ case $CHOICE in
             echo "You Chose Continue after Reboot"
 		continue=1
             ;;
-	4)
-	    echo "Checking Nextion Driver Installation"
-		preparedir
-		sudo /Nextion/check_installation.sh
-		sudo ./IND3.sh
-	   ;;
-	5)   echo " You Chose to Quit"
-		exit
+        4)
+            echo "Checking Nextion Driver Installation"
+		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
+                sudo /Nextion/check_installation.sh
+                exit
+           ;;
+        5)   echo " You Chose to Quit"
+                exit
 
-	;;
+        ;;
+
 esac
 
 clear
 
 echo " "
 
-sudo mount -o remount,rw /
 
 	sudo chmod 755 /usr/local/sbin/nextion*
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
@@ -173,8 +165,6 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 clear
-sudo mount -o remount,rw /
-
 case $CHOICE in
 
          1)   		echo "Setting the Port to TTL Adapter, and ScreenLayout to 3 ON7LDSHS LS "
@@ -195,13 +185,12 @@ case $CHOICE in
             	;;
         	*) echo "invalid option $REPLY";;
     	esac
-	preparedir
+	sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
 	sudo /Nextion/check_installation.sh
         
         echo " "
 
         m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
-sudo mount -o remount,rw /
 
         if [ -z "$m1" ]; then
                 sudo mount -o remount,rw /
@@ -244,13 +233,11 @@ case $CHOICE in
                 ;;
         esac
 
-sudo mount -o remount,rw /
 
 	echo "Installing BC"
 	sudo apt-get install bc
 
 	sudo mount -o remount,rw /
-sudo mount -o remount,rw /
 
 	sudo rm -R /temp
 	sudo sh -c 'echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw'
@@ -260,7 +247,6 @@ sudo mount -o remount,rw /
 	echo "Nextion Driver Installation Completed"
 	echo "Rebooting Pi-Star"
 	#rm -R /Nextion
-sudo mount -o remount,rw /
         
 	if [ -f /home/pi-star/ndis.txt ]; then
 	sudo  rm /home/pi-star/ndis.txt

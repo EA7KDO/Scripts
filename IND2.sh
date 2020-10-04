@@ -23,8 +23,6 @@ sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
-
-
 echo -e '\e[1;44m'
 clear
 sudo mount -o remount,rw /
@@ -42,6 +40,15 @@ echo " Part way through the procedure. After the Reboot, run this script again"
 echo " and select 'Continue' in the following menu"
 echo " "
 continue=0
+
+function preparedir
+{
+                if [ -d /Nextion ] ; then
+                        sudo rm -R /Nextion
+                fi
+                sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
+}
+
 
 function installnxd
 {
@@ -64,7 +71,7 @@ function installnxd
 		if [ -d /Nextion ]; then
 			rm -d /Nextion
 		fi
-		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
+		preparedir
 		#Run the Install Script
 		echo "Run the Install Script"
 		sudo /Nextion/install.sh 
@@ -118,8 +125,9 @@ case $CHOICE in
             ;;
         4)
             echo "Checking Nextion Driver Installation"
+		preparedir
                 sudo /Nextion/check_installation.sh
-                exit
+                sudo ./IND2.sh
            ;;
         5)   echo " You Chose to Quit"
                 exit
@@ -176,6 +184,8 @@ case $CHOICE in
             	;;
         	*) echo "invalid option $REPLY";;
     	esac
+
+	preparedir
 	sudo /Nextion/check_installation.sh
         
         echo " "
