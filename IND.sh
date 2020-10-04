@@ -157,7 +157,7 @@ case $CHOICE in
 		sudo /Nextion/check_installation.sh
 		echo "Sleeping 7 Seconds before re-staring the script"
 		sleep 7
-		sudo ./IND3.sh
+		sudo ./IND.sh
 	   ;;
 	5)   echo " You Chose to Quit"
 		exit
