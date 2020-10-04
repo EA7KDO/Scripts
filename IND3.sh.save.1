@@ -39,8 +39,6 @@ echo " This script Installs the Nextion Driver. It will require a reboot "
 echo " Part way through the procedure. After the Reboot, run this script again"
 echo " and select 'Continue' in the following menu"
 echo " "
-sleep 3
-
 continue=0
 
 function preparedir
@@ -70,35 +68,25 @@ function installnxd
 		echo "STARTING NEXTION DRIVER INSTALLATION"
 		echo " "
 		echo "Remove Existing Nextion Driver"
-		sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
 		#Remove the Nextion Driver if it exists
                 if [ -f /usr/local/bin/NextionDriver ] ; then
 			sudo rm /usr/local/bin/NextionDriver
 		fi
-		sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
 		#Download the driver to /Nextion/
-		echo "Remove /Nextion Install Directory"
+		echo "Remove /Nextion Directory"
                 if [ -d /Nextion ] ; then
                         sudo rm -R /Nextion
                 fi
-		sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 		echo "Get Files from github"
-		 sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
-
-		#Check to ensure we created the Install Directory
-                if [ -d /Nextion ] ; then
-                        echo "Install Directory created ok"
-		else
-			echo "Failed to Create Install Directory- Check RW Permissions"
-			exit
-                fi
-
-
+		preparedir
 		#Run the Install Script
-		echo "Running the Install Script"
-		sudo mount -o remount,rw /
+		echo "Run the Install Script"
+sudo mount -o remount,rw /
 		sudo /Nextion/install.sh 
 		
     		exit
@@ -153,7 +141,7 @@ case $CHOICE in
             ;;
 	4)
 	    echo "Checking Nextion Driver Installation"
-		preparedir2
+		preparedir
 		sudo /Nextion/check_installation.sh
 		echo "Sleeping 7 Seconds before re-staring the script"
 		sleep 7
@@ -166,12 +154,6 @@ case $CHOICE in
 esac
 
 clear
-echo "Checking Nextion Driver Installation"
-echo ""
-	preparedir2
-	sudo /Nextion/check_installation.sh
-echo "Sleeping 5 seconds"
-        sleep 3
 
 echo " "
 
@@ -204,30 +186,31 @@ sudo mount -o remount,rw /
 
 case $CHOICE in
 
-         1)   		echo "Setting the Port to TTL Adapter, and ScreenLayout to 4 ON7LDSHS LS "
+         1)   		echo "Setting the Port to TTL Adapter, and ScreenLayout to 3 ON7LDSHS LS "
 			sudo sed -i '/^\[/h;G;/Nextion]/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(Port=\).*/\1\/dev\/ttyUSB0/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(ScreenLayout=\).*/\14/m;P;d'  /etc/mmdvmhost
 			# if using TTL_Adapter set WaitForLan=0 we do not need to wait for LAN if using USB for screen
 			sudo sed -i '/^\[/h;G;/NextionDriver/s/\(WaitForLan=\).*/\10/m;P;d'  /etc/mmdvmhost
-			sleep 3
 		;;
         2)
             		echo "Setting the Ports to GPIO, ScreenLayout to 3 ON7LDSHS"
 			sudo sed -i '/^\[/h;G;/Nextion]/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(Port=\).*/\1\/dev\/ttyAMA0/m;P;d'  /etc/mmdvmhost                        
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(ScreenLayout=\).*/\13/m;P;d'  /etc/mmdvmhost                        
-			sleep 3
             	;;
         3)
 			exit            	
             	;;
         	*) echo "invalid option $REPLY";;
     	esac
+	preparedir2
+	sudo /Nextion/check_installation.sh
+        
         echo " "
 
         m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
-	sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
         if [ -z "$m1" ]; then
                 sudo mount -o remount,rw /
@@ -259,26 +242,24 @@ case $CHOICE in
                 1)
                         echo "Fahrenheit Selected"
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(DisplayTempInFahrenheit=\).*/\11/m;P;d'  /etc/mmdvmhost                        
-			sleep 3 
-               ;;
+                ;;
 
                 2)
                         echo "Celcius Selected "
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(DisplayTempInFahrenheit=\).*/\10/m;P;d'  /etc/mmdvmhost
-			sleep 3
                 ;;
                 3)
 			exit
                 ;;
         esac
 
-	sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
 	echo "Installing BC"
 	sudo apt-get install bc
 
 	sudo mount -o remount,rw /
-	sudo mount -o remount,rw /
+sudo mount -o remount,rw /
 
 	sudo rm -R /temp
 	sudo sh -c 'echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw'
@@ -286,9 +267,9 @@ case $CHOICE in
 	sudo pistar-firewall
 
 	echo "Nextion Driver Installation Completed"
-	echo "Rebooting Pi-Star in 3 seconds"
+	echo "Rebooting Pi-Star"
 	#rm -R /Nextion
-	sudo mount -o remount,rw /
+sudo mount -o remount,rw /
         
 	if [ -f /home/pi-star/ndis.txt ]; then
 	sudo  rm /home/pi-star/ndis.txt
@@ -296,7 +277,7 @@ case $CHOICE in
 
 echo -e '\e[1;40m'
 clear
-sleep 3
+
 	sudo reboot
 
 
