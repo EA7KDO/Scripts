@@ -46,6 +46,9 @@ function flashscreen
 
 sudo mount -o remount,rw /
 
+# insure python seial module is loaded
+sudo apt-get install python serial
+
 errtxt="Nothing"
 
 if [ -f ~/.dialog ]; then
