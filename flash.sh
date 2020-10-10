@@ -2,11 +2,14 @@
 #################################################################
 #  This script will flash the TFT File into The Nextion Screen  #
 #                                                             	#
-#  VE3RD                                      2020/05/12      	#
+#  VE3RD                                      2020/10/10     	#
 #################################################################
 set -o errexit
 set -o pipefail
-ver="20200512"
+ver="20201010"
+
+#sudo apt-get install python serial
+sudo apt-get install -y python-serial
 export NCURSES_NO_UTF8_ACS=1
 
 ## Programmed Shutdown
@@ -47,7 +50,6 @@ function flashscreen
 sudo mount -o remount,rw /
 
 # insure python seial module is loaded
-sudo apt-get install python serial
 
 errtxt="Nothing"
 
