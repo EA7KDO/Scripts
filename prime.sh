@@ -13,7 +13,7 @@ if [ "$1" ]; then
         sc1="$1"
 	slen1=$(expr length "$sc1")
 
-	if [ "$slen1" != 15 ]; then
+	if [ "$slen1" != 16 ]; then
 		echo "Wrong String Length for Security Password"
 		exit
 	fi
@@ -24,7 +24,7 @@ else
 		sc1=$(cat /home/pi-star/Prime.txt)
 		slen1=$(expr length "$sc1")
 
-		if [ "$slen1" != 15 ]; then
+		if [ "$slen1" != 16 ]; then
 			echo "Wrong String Length for Security Password"
 			exit
 		fi
@@ -42,9 +42,9 @@ slen2=$(expr length "$sc2")
 
 echo "$sc1"
 echo "$sc2"
-m1="MNet_Network"
+m1="Prime_TGIF_Network"
 m2="0000"
-m3="mnet.hopto.org"
+m3="prime.tgif.network"
 m5="62031"
 
 	textstr="$m1\t\t$m2\t$m3\t\t\t$m4\t\t$m5"
