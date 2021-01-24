@@ -106,7 +106,7 @@ fi
 
 HEIGHT=15
 WIDTH=60
-CHOICE_HEIGHT=5
+CHOICE_HEIGHT=7
 BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
 TITLE="Main Menu - Nextion Driver Installation"
 MENU="Select your Installation Mode"
@@ -115,7 +115,8 @@ OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
          2 "Install Nextion Driver - No Update"
          3 "Continue after Reboot from Option 1 or 2"
 	 4 "Check Nextion Driver Instllation"
-	 5 "Quit")
+	 5 "Update stripped.csv"
+	 6 "Quit")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -153,7 +154,11 @@ case $CHOICE in
 		sleep 7
 		sudo ./IND.sh
 	   ;;
-	5)   echo " You Chose to Quit"
+	5)
+		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+		exit
+	   ;;
+	6)   echo " You Chose to Quit"
 		exit
 
 	;;
