@@ -11,6 +11,7 @@ export NCURSES_NO_UTF8_ACS=1
 
 if [ "$1" ]; then
 char="$1"
+char=${char^^}
 	key=${char:0:1}
 else
 	key="Q"
