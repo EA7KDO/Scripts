@@ -184,7 +184,7 @@ if [ ! "$fb" ]; then
  exec 2>&3
 fi 
 
-echo "$calltxt Scripts Loaded: $execution_time"
+echo "$scn Ready  $execution_time"
 
 
 

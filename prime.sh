@@ -42,9 +42,9 @@ slen2=$(expr length "$sc2")
 
 echo "$sc1"
 echo "$sc2"
-m1="Prime_TGIF_Network"
+m1="Secured_TGIF_Network"
 m2="0000"
-m3="prime.tgif.network"
+m3="tgif.network"
 m5="62031"
 
 	textstr="$m1\t\t$m2\t$m3\t\t\t$m4\t\t$m5"
@@ -63,6 +63,7 @@ m5="62031"
         echo ""
 
 
+echo "Created an entry in your DMR Host file called  Secured_TGIF_Network"
 
 
 
