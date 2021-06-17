@@ -161,13 +161,13 @@ if [ "$fb" ]; then
     echo "Remove Existing $model$tft and copy in the new one"
 fi
 
-if [ -f /usr/local/etc/$model$tft ]; then
+if [ -f /usr/local/etc/"$model$tft" ]; then
 	sudo rm /usr/local/etc/NX*.tft
 fi
-sudo cp /home/pi-star/Nextion_Temp/$model$tft /usr/local/etc/
+sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
 
 
- FILE=/usr/local/etc/$model$tft
+ FILE=/usr/local/etc/"$model$tft"
  if [ ! -f "$FILE" ]; then
         # Copy failed
       echo "No TFT File Available to Flash - Try Again"
