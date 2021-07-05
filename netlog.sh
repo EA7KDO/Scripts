@@ -83,7 +83,9 @@ do
 
 	if [ "$lastcall" != "$call" ]; then
 		if [ "$call" == "$netcont" ]; then
-			echo " --------------------------------- "
+			dts=$(zdump EST+4 | cut -d " " -f 7)
+
+			echo "-------------------- $dt  Net Control $netcont "
 			callstat="NC"		
 		else
 			userinfo
