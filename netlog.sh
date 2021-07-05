@@ -21,7 +21,7 @@ else
 fi
 
 if [ "$1" == "new" ] || [ "$2" == "new" ]; then
-	date > ./netlog.log
+	date > /home/pi-star/netlog.log
 fi
 
 
@@ -44,10 +44,10 @@ function userinfo(){
 }
 
 function checkcall(){
-	ck=$(sed -n '/'"$call"'/p' ./netlog.log | cut -d "," -f 2)
+	ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 2)
 #        echo "Found Call x""$ck""x"
 	if [ "$ck" ]; then
-		ckt=$(sed -n '/'"$call"'/p' ./netlog.log | cut -d "," -f 1)
+		ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 1)
 		callstat="Dup"
         else
 #		echo "New Call $call"
@@ -63,7 +63,7 @@ function Logit(){
 	echo "$dts EST/DST -- $call --  $name, $city, $state, $country "	
 	sudo mount -o remount,rw /
 	## Write New Call to Log File
-	echo "$dts EST/DST,$call,$name,$city,$state,$country " >> ./netlog.log
+	echo "$dts EST/DST,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
 }
 
 while true
