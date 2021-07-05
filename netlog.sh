@@ -13,6 +13,8 @@ callstat="dup"
 callinfo="No Info"
 lastcall=""
 netcont="$1"
+sudo touch /home/pi-star/netlog.sh
+ 
 if [ ! "$1" ] || [ "$1" == "new" ]; then
 	echo "No Net Controller Specified"
 	netcont="N/A"
@@ -20,7 +22,7 @@ else
 	echo "Net Controller is $netcont"
 fi
 
-if [ "$1" == "new" ] || [ "$2" == "new" ]; then
+if [ "$1" == "new" ] || [ "$2" == "new" ] || [ ! -f /home/pi-star/netlog.log ]; then
 	date > /home/pi-star/netlog.log
 fi
 
