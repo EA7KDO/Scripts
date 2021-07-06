@@ -15,9 +15,6 @@ lastcall=""
 netcont="$1"
 dur=$((0))
 
-#echo -e '\e[1;40m'
-#echo -e '\e[1;44m'
-
 
 sudo touch /home/pi-star/netlog.sh
  
@@ -29,7 +26,10 @@ else
 fi
 
 if [ "$1" == "new" ] || [ "$2" == "new" ] || [ ! -f /home/pi-star/netlog.log ]; then
-	date > /home/pi-star/netlog.log
+	datest=$(date)
+	echo "    Log Started  $datest"
+	echo "    Log Started  $datest" > /home/pi-star/netlog.log
+#	date > /home/pi-star/netlog.log
 fi
 
 
