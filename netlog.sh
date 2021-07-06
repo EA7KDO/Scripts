@@ -15,6 +15,9 @@ lastcall=""
 netcont="$1"
 dur=$((0))
 
+#echo -e '\e[1;40m'
+#echo -e '\e[1;44m'
+
 
 sudo touch /home/pi-star/netlog.sh
  
@@ -65,7 +68,9 @@ function checkcall(){
 function Logit(){
 	dts=$(zdump EST+4 | cut -d " " -f 7)
 	## Write New Call to Screen
-	echo "$dts EST/DST -- $call --  $name, $city, $state, $country  Dur:$dert""sec"	
+
+	echo -e '\e[0;32m'"$dts EST/DST -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
+
 	sudo mount -o remount,rw /
 	## Write New Call to Log File
 	echo "$dts EST/DST,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
@@ -84,6 +89,7 @@ do
 #	call=$(echo "$nline" | cut -d " " -f 12 )
 	call2=$(echo "$nline2" | cut -d " " -f 14 )
 	durt=$(echo "$nline2" | cut -d " " -f 18 )
+	pl=$(echo "$nline2" | cut -d " " -f 20 )
 	dur=$(printf "%1.0f\n" $durt)
 	call=$call2
 #	echo "$call"
@@ -94,6 +100,11 @@ do
 		if [ "$call" == "$netcont" ]; then
 
 			echo "-------------------- $dt  Net Control $netcont "
+
+			name=""
+			city=""
+			state=""
+			country=""
 			callstat="NC"		
 		else
 			userinfo
@@ -101,7 +112,7 @@ do
 		fi
 
 		if [ $dur -lt 2 ]; then
-			echo "KeyUp $dts $call $name $durt"" sec"
+			echo -e '\033[0;36m'"KeyUp $dts $call $name $durt"" sec"
 			callstat=""
 		fi
 
@@ -110,7 +121,7 @@ do
 		fi
 		if [ "$callstat" == "Dup" ]; then
 			## Write Duplicate Info to Screen
-			echo "Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec"
+			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 		fi
 		
 
