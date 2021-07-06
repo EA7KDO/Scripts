@@ -30,6 +30,7 @@ if [ ! "$1" ] || [ "$1" == "new" ]; then
 	netcont="N/A"
 else
 	echo "Net Controller is $netcont"
+	echo ""
 fi
 
 if [ "$1" == "new" ] || [ "$2" == "new" ] || [ ! -f /home/pi-star/netlog.log ]; then
@@ -95,6 +96,7 @@ do
 
 	if [ "$lastcall" != "$call" ]; then
 		if [ "$call" == "$netcont" ]; then
+			sudo mount -o remount,rw /
 
 			echo -e '\e[1;31m'"-------------------- $Time  Net Control $netcont "
 			echo -e "-------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
@@ -110,19 +112,25 @@ do
 		fi
 
 		if [ $dur -lt 2 ]; then
-			echo -e '\e[0;36m'"KeyUp $Time $call $name $durt"" sec"
+			######echo -e '\e[0;36m\033[<1>A'
+			printf '\e[0;36m'
+			printf "KeyUp %-10s %-8s %-12s %-5s sec\n" "$Time" "$call" "$name" "$durt"
 			callstat=""
 		fi
 
 		if [ "$callstat" == "New" ] && [ "$call" != "$netcont" ]; then
 			## Write New Call to Screen
-			echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
+			printf '\e[1;32m'
+	#		echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
+			printf "New %-9s -- %-8s -- %-12s %-9s %-14s  %-12s %-14s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur:$durt sec"  "PL: $pl"	
 
 			Logit
 		fi
 		if [ "$callstat" == "Dup" ]; then
 			## Write Duplicate Info to Screen
-			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
+#			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
+			printf '\e[0;33m'
+			printf "Duplicate -- %-7s-- %-8s %-12s %-14s %9s\n" "$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl"
 		fi
 		
 
@@ -131,3 +139,4 @@ do
 	lastcall="$call"
 	sleep 1
 done
+
