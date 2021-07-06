@@ -69,7 +69,7 @@ function Logit(){
 	dts=$(zdump EST+4 | cut -d " " -f 7)
 	## Write New Call to Screen
 
-	echo -e '\e[0;32m'"$dts EST/DST -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
+	echo -e '\e[0;33m'"$dts EST/DST -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
 
 	sudo mount -o remount,rw /
 	## Write New Call to Log File
@@ -99,7 +99,8 @@ do
 	if [ "$lastcall" != "$call" ]; then
 		if [ "$call" == "$netcont" ]; then
 
-			echo "-------------------- $dt  Net Control $netcont "
+			echo -e '\e[1;31m'"-------------------- $dts  Net Control $netcont "
+			echo -e "-------------------- $dts  Net Control $netcont "
 
 			name=""
 			city=""
@@ -112,7 +113,7 @@ do
 		fi
 
 		if [ $dur -lt 2 ]; then
-			echo -e '\033[0;36m'"KeyUp $dts $call $name $durt"" sec"
+			echo -e '\e[0;36m'"KeyUp $dts $call $name $durt"" sec"
 			callstat=""
 		fi
 
@@ -121,7 +122,7 @@ do
 		fi
 		if [ "$callstat" == "Dup" ]; then
 			## Write Duplicate Info to Screen
-			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
+			echo  -e '\e[1;32m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 		fi
 		
 
