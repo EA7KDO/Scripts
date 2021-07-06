@@ -1,9 +1,10 @@
 #!/bin/bash
 ############################################################
 #  This script will automate the process of                #
-#  Logging Calls on a Pi-Star Hotpot                       #
+#  Logging Calls on a Pi-Star Hotpot			   #
+#  to assist with Net Logging                              #
 #                                                          #
-#  VE3RD                                      2021/07/04   #
+#  VE3RD                                      2021/07/05   #
 ############################################################
 set -o errexit
 set -o pipefail
@@ -14,7 +15,13 @@ callinfo="No Info"
 lastcall=""
 netcont="$1"
 dur=$((0))
+ver=20210706
 
+clear
+echo "NET Logging Program by VE3RD Version $ver"
+echo ""
+echo "Dates and Times Shown are Local to your hotspot"
+echo ""
 
 sudo touch /home/pi-star/netlog.sh
  
@@ -26,9 +33,11 @@ else
 fi
 
 if [ "$1" == "new" ] || [ "$2" == "new" ] || [ ! -f /home/pi-star/netlog.log ]; then
-	datest=$(date)
-	echo "    Log Started  $datest"
-	echo "    Log Started  $datest" > /home/pi-star/netlog.log
+	dates=$(date '+%A %Y-%m-%d %T')
+
+	echo "Log Started  $dates"
+	echo "    Log Started  $dates" > /home/pi-star/netlog.log
+	echo ""
 #	date > /home/pi-star/netlog.log
 fi
 
@@ -66,41 +75,29 @@ function checkcall(){
 }
 
 function Logit(){
-	dts=$(zdump EST+4 | cut -d " " -f 7)
-	## Write New Call to Screen
-
-	echo -e '\e[0;33m'"$dts EST/DST -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
-
 	sudo mount -o remount,rw /
 	## Write New Call to Log File
-	echo "$dts EST/DST,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
+	echo "$Time ,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
 }
 
 while true
 do 
 
-#	f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 | cut -d " " -f 10 )
 	f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
-
-#	echo "$f1"
-
-#	nline=$(grep -w header "$f1" | tail -n 1)
 	nline2=$(grep -w transmission "$f1" | tail -n 1)
-#	call=$(echo "$nline" | cut -d " " -f 12 )
 	call2=$(echo "$nline2" | cut -d " " -f 14 )
 	durt=$(echo "$nline2" | cut -d " " -f 18 )
 	pl=$(echo "$nline2" | cut -d " " -f 20 )
 	dur=$(printf "%1.0f\n" $durt)
 	call=$call2
-#	echo "$call"
 	
-	dts=$(zdump EST+4 | cut -d " " -f 7)
+ 	Time=$(date '+%T')  
 
 	if [ "$lastcall" != "$call" ]; then
 		if [ "$call" == "$netcont" ]; then
 
-			echo -e '\e[1;31m'"-------------------- $dts  Net Control $netcont "
-			echo -e "-------------------- $dts  Net Control $netcont "
+			echo -e '\e[1;31m'"-------------------- $Time  Net Control $netcont "
+			echo -e "-------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
 			city=""
@@ -113,16 +110,19 @@ do
 		fi
 
 		if [ $dur -lt 2 ]; then
-			echo -e '\e[0;36m'"KeyUp $dts $call $name $durt"" sec"
+			echo -e '\e[0;36m'"KeyUp $Time $call $name $durt"" sec"
 			callstat=""
 		fi
 
 		if [ "$callstat" == "New" ] && [ "$call" != "$netcont" ]; then
+			## Write New Call to Screen
+			echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
+
 			Logit
 		fi
 		if [ "$callstat" == "Dup" ]; then
 			## Write Duplicate Info to Screen
-			echo  -e '\e[1;32m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
+			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 		fi
 		
 
