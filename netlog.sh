@@ -137,7 +137,7 @@ do
 			## Write Duplicate Info to Screen
 #			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 			printf '\e[0;33m'
-			printf "Duplicate %-s -- %-15s-- %-8s %-12s %-14s %-9s %s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" "$ckt"
+			printf "Duplicate %-3s -- %-15s-- %-8s %-12s %-14s %-9s %s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" "$ckt"
 		fi
 
 	fi
