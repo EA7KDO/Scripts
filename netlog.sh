@@ -13,11 +13,12 @@ sudo mount -o remount,rw /
 callstat="dup"
 callinfo="No Info"
 lastcall=""
-netcont="$1"
+nc="$1"
+netcont=${nc^^}
 dur=$((0))
 ver=20210706
+cnt=$((0))
 
-clear
 echo "NET Logging Program by VE3RD Version $ver"
 echo ""
 echo "Dates and Times Shown are Local to your hotspot"
@@ -40,6 +41,10 @@ if [ "$1" == "new" ] || [ "$2" == "new" ] || [ ! -f /home/pi-star/netlog.log ]; 
 	echo "    Log Started  $dates" > /home/pi-star/netlog.log
 	echo ""
 #	date > /home/pi-star/netlog.log
+else
+	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
+#	echo "$cnt"
+	cnt=$((cntt))
 fi
 
 
@@ -62,10 +67,11 @@ function userinfo(){
 }
 
 function checkcall(){
-	ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 2)
+	ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 3)
 #        echo "Found Call x""$ck""x"
 	if [ "$ck" ]; then
-		ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 1)
+		ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 2)
+		cnt2=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | cut -d "," -f 1)
 		callstat="Dup"
         else
 #		echo "New Call $call"
@@ -78,7 +84,7 @@ function checkcall(){
 function Logit(){
 	sudo mount -o remount,rw /
 	## Write New Call to Log File
-	echo "$Time ,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
+	echo "$cnt,$Time,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
 }
 
 while true
@@ -120,9 +126,10 @@ do
 
 		if [ "$callstat" == "New" ] && [ "$call" != "$netcont" ]; then
 			## Write New Call to Screen
+			cnt=$((cnt+1))
 			printf '\e[1;32m'
 	#		echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
-			printf "New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+			printf "%-4d New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 
 			Logit
 		fi
@@ -130,9 +137,8 @@ do
 			## Write Duplicate Info to Screen
 #			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 			printf '\e[0;33m'
-			printf "Duplicate -- %-7s-- %-8s %-12s %-14s %9s\n" "$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl"
+			printf "Duplicate %-s -- %-15s-- %-8s %-12s %-14s %-9s %s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" "$ckt"
 		fi
-		
 
 	fi
 
