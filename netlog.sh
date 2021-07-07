@@ -122,7 +122,7 @@ do
 			## Write New Call to Screen
 			printf '\e[1;32m'
 	#		echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
-			printf "New %-9s -- %-8s -- %-12s %-9s %-14s  %-12s %-14s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur:$durt sec"  "PL: $pl"	
+			printf "New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 
 			Logit
 		fi
