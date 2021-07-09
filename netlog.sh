@@ -42,7 +42,7 @@ function header(){
 	echo "Dates and Times Shown are Local to your hotspot"
 	echo ""
 	echo "Net Log Started $dates"
-	echo "Net Log Started $dates" > /home/pi-star/netlog.log
+	echo "0, Net Log Started $dates" > /home/pi-star/netlog.log
 	echo ""
 
 	if [ ! "$P1" ] || [ "$P1" == "NEW" ]; then
@@ -58,7 +58,7 @@ function getuserinfo(){
  	line=$(sed -n '/'"$call"',/p' /usr/local/etc/stripped.csv | tail -n1)	
 
 	if [ line ]; then
-		name=$(echo "$line" | cut -d "," -f 3)
+		name=$(echo "$line" | cut -d "," -f 3 | cut -d " " -f 1)
 		city=$(echo "$line"| cut -d "," -f 5)
 		state=$(echo "$line" | cut -d "," -f 6)
 		country=$(echo "$line" | cut -d "," -f 7)
