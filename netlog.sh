@@ -135,7 +135,7 @@ do
 			sudo mount -o remount,rw /
 
 			echo -e '\e[1;31m'"-------------------- $Time  Net Control $netcont "
-			echo -e "-------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
+			echo -e "0,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
 			city=""
