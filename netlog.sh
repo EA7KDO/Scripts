@@ -9,7 +9,7 @@
 set -o errexit 
 set -o pipefail 
 set -e 
-ver=20210711 
+ver=20210712
 
 sudo mount -o remount,rw / 
 
@@ -151,7 +151,7 @@ do
 
 	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
 		printf '\e[0;35m'
-		echo "             Active Transmission from $call1 $name"
+		echo "             Active Transmission from $call1 $name, $city, $state, $country"
 		lcm=1
 
 	fi
@@ -199,6 +199,8 @@ do
 			## Write Duplicate Info to Screen
 #			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 			lcm=0
+		tput el 1
+		tput el
 			printf '\e[0;33m'
 			printf "Duplicate %-3s -- %-15s -- %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
 		fi
