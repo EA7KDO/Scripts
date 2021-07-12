@@ -9,28 +9,23 @@
 set -o errexit 
 set -o pipefail 
 set -e 
-ver=20210708 
-
+ver=20210711 
 
 sudo mount -o remount,rw / 
 
 callstat="dup" 
 callinfo="No Info" 
-lastcall="" 
+lastcall2="" 
+lastcall1=""
 P1="$1" 
 P2="$2" 
 netcont=${P1^^} 
 stat=${P2^^} 
-echo "$netcont"   "$stat" 
+#echo "$netcont"   "$stat" 
 dur=$((0)) 
 cnt=$((0))
-
-
-function getnewcall(){
-	f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
-	nline2=$(grep -w transmission "$f1" | tail -n 1)
-	call2=$(echo "$nline2" | cut -d " " -f 14 )
-}
+cm=0
+lcm=0
 
  
 function header(){
@@ -99,42 +94,72 @@ function Logit(){
 	echo "$cnt,$Time,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
 }
 
+function getnewcall(){
+        f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
+        nline1=$(tail -n 1 "$f1")
+
+if [[ $nline1 =~ "header" ]]; then
+   cm=1
+ 	call=$(echo "$nline1" | cut -d " " -f 12) 
+        call1="$call"
+        ln2=""
+fi
+if [[ $nline1 =~ "transmission" ]]; then
+        call=$(echo "$nline1" | cut -d " " -f 14 )
+        call2="$call"
+        ln1=""
+	if [ "$cm" == 1 ]; then
+		tput cuu 1
+#		tput el 1
+#		tput el
+	fi
+        cm=2
+fi
+if [[ $nline1 =~ "watchdog" ]]; then
+        cm=3
+fi
+
+if [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
+   tput cuu 1
+fi
+}
+
+
+
 ######## Start of Main Program
 
 if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
 	dates=$(date '+%A %Y-%m-%d %T')
-        header
-	getnewcall
-	lastcall="$call"
-	cnt=0
+        header 
 else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 #	echo "New Header $cntt"
-	cnt=$((cntt))
-	tput cuu 1
-	tput el 1
-	tput el
-
+#	tput cuu 1
+#	tput el 1
+#	tput el
 fi
-
 
 while true
 do 
-	f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
-	nline2=$(grep -w transmission "$f1" | tail -n 1)
-	call2=$(echo "$nline2" | cut -d " " -f 14 )
-	durt=$(echo "$nline2" | cut -d " " -f 18 )
-	pl=$(echo "$nline2" | cut -d " " -f 20 )
-	dur=$(printf "%1.0f\n" $durt)
-	call=$call2
-	
- 	Time=$(date '+%T')  
+	cm=0	
 
-	if [ "$lastcall" != "$call" ]; then
-		if [ "$call" == "$netcont" ]; then
+	getnewcall
+	getuserinfo
+	checkcall
+
+	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
+		printf '\e[0;35m'
+		echo "             Active Transmission from $call1 $name"
+		lcm=1
+
+	fi
+
+ 	Time=$(date '+%T')  
+	if [ "$lastcall2" != "$call2" ] && [ "$cm" == 2 ]; then
+		if [ "$call2" == "$netcont" ]; then
 			sudo mount -o remount,rw /
 
-			echo -e '\e[1;31m'"-------------------- $Time  Net Control $netcont "
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont "
 			echo -e "0,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
@@ -142,38 +167,52 @@ do
 			state=""
 			country=""
 			callstat="NC"		
-		else
-			getuserinfo
-			checkcall
 		fi
+		
+		durt=$(echo "$nline1" | cut -d " " -f 18 )
+		pl=$(echo "$nline1" | cut -d " " -f 20 )
+		dur=$(printf "%1.0f\n" $durt)
 
-		if [ $dur -lt 3 ]; then
-			######echo -e '\e[0;36m\033[<1>A'
+		if [ $dur -lt 3 ] && [ "$cm" == 2 ]; then
+			#### Keyup < 3 seconds
+			getuserinfo
 			printf '\e[0;36m'
-			printf "KeyUp %-10s %-8s %-14s %-5s sec\n" "$Time" "$call" "$name" "$durt"
+			lcm=0
+#			printf "KeyUp %-10s %-8s %-14s %-5s sec\n" "$Time" "$call" "$name" "$durt"
+			printf "KeyUp %-8s %-6s %-13s %-17s %-18s %-14s %-16s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 			callstat=""
 		fi
 
-		if [ "$callstat" == "New" ] && [ "$call" != "$netcont" ]; then
+		if [ "$callstat" == "New" ] && [ "$call" != "$netcont" ] && [ "$cm" == 2 ]; then
 			## Write New Call to Screen
 			cnt=$((cnt+1))
 			printf '\e[1;32m'
 	#		echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
-			printf "%-4d New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 
+			printf "%-4d New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+			lcm=0
 			Logit
 		fi
-		if [ "$callstat" == "Dup" ]; then
+		if [ "$callstat" == "Dup" ] && [ "$cm" == 2 ]; then
 			## Write Duplicate Info to Screen
 #			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
+			lcm=0
 			printf '\e[0;33m'
-			
-			printf "Duplicate %-3s -- %-15s-- %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
+			printf "Duplicate %-3s -- %-15s -- %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
 		fi
 
+		lastcall2="$call2"
 	fi
-
-	lastcall="$call"
-	sleep 1
+	
+	if [ "$cm" == 3 ] && [ "$lastcall3" != "$call" ]; then
+		printf '\e[1;31m'
+		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, PL:$pl        "
+		lastcall3="$call"
+		lcm=0
+	fi
+	if [ "$lcm" == 1 ]; then
+		tput cuu 1
+		lcm=0
+	fi
 done
 
