@@ -129,10 +129,12 @@ fi
 ######## Start of Main Program
 
 if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
+	## Delete and start a new data file starting with date line
 	dates=$(date '+%A %Y-%m-%d %T')
         header 
 else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
+	cnt=$((cntt))
 #	echo "New Header $cntt"
 #	tput cuu 1
 #	tput el 1
