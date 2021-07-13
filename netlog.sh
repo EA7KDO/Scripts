@@ -181,7 +181,8 @@ do
 			printf '\e[0;36m'
 			lcm=0
 #			printf "KeyUp %-10s %-8s %-14s %-5s sec\n" "$Time" "$call" "$name" "$durt"
-			printf "KeyUp %-8s %-6s %-13s %-17s %-18s %-14s %-16s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+#			printf "KeyUp %-8s %-6s %-13s %-17s %-18s %-14s %-16s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+			printf "KeyUp %-8s %s,  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 			callstat=""
 		fi
 
@@ -210,6 +211,8 @@ do
 	
 	if [ "$cm" == 3 ] && [ "$lastcall3" != "$call" ]; then
 		printf '\e[1;31m'
+		tput el 1
+		tput el
 		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, PL:$pl        "
 		lastcall3="$call"
 		lcm=0
