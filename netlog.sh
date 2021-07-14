@@ -49,6 +49,21 @@ function header(){
 	fi
 }
 
+function getserver(){
+Addr=$(sed -nr "/^\[DMR Network\]/ { :l /^Address[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/mmdvmhost)
+fg=$(ls /var/log/pi-star/DMRGateway* | tail -n1)
+
+
+if [ $Addr = "127.0.0.1" ]; then
+	NetNum=$(sudo tail -n1 "$fg" | cut -d " " -f 6)
+	NName=$(sed -nr "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
+  	server="$NName"
+else
+	ms=$(sudo sed -n '/^[^#]*'"$Addr"'/p' /usr/local/etc/DMR_Hosts.txt | sed -E "s/[[:space:]]+/|/g" | cut -d'|' -f1)
+ 	server="$ms"
+fi
+}
+
 function getuserinfo(){
  	line=$(sed -n '/'"$call"',/p' /usr/local/etc/stripped.csv | tail -n1)	
 
@@ -97,10 +112,12 @@ function Logit(){
 function getnewcall(){
         f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
         nline1=$(tail -n 1 "$f1")
+	tg=""
 
 if [[ $nline1 =~ "header" ]]; then
    cm=1
  	call=$(echo "$nline1" | cut -d " " -f 12) 
+	tg=$(echo "$nline1" | cut -d " " -f 15)
         call1="$call"
         ln2=""
 fi
@@ -152,7 +169,8 @@ do
 
 	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
 		printf '\e[0;35m'
-		echo "             Active Transmission from $call1 $name, $city, $state, $country"
+		getserver
+		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg $server"
 		lcm=1
 
 	fi
@@ -160,9 +178,10 @@ do
  	Time=$(date '+%T')  
 	if [ "$lastcall2" != "$call2" ] && [ "$cm" == 2 ]; then
 		if [ "$call2" == "$netcont" ]; then
+			getserver
 			sudo mount -o remount,rw /
-
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont                           "
+			
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $server "          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
@@ -181,9 +200,7 @@ do
 			getuserinfo
 			printf '\e[0;36m'
 			lcm=0
-#			printf "KeyUp %-10s %-8s %-14s %-5s sec\n" "$Time" "$call" "$name" "$durt"
-#			printf "KeyUp %-8s %-6s %-13s %-17s %-18s %-14s %-16s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
-			printf "KeyUp %-8s %-6s  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+			printf "KeyUp %-8s %-6s  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
 			callstat=""
 		fi
 
