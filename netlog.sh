@@ -4,12 +4,12 @@
 #  Logging Calls on a Pi-Star Hotpot			   #
 #  to assist with Net Logging                              #
 #                                                          #
-#  VE3RD                                      2021/07/05   #
+#  VE3RD                              Created 2021/07/05   #
 ############################################################
 set -o errexit 
 set -o pipefail 
 set -e 
-ver=20210712
+ver=20210714
 
 sudo mount -o remount,rw / 
 
@@ -114,32 +114,30 @@ function getnewcall(){
         nline1=$(tail -n 1 "$f1")
 	tg=""
 
-if [[ $nline1 =~ "header" ]]; then
-   cm=1
- 	call=$(echo "$nline1" | cut -d " " -f 12) 
-	tg=$(echo "$nline1" | cut -d " " -f 15)
-        call1="$call"
-        ln2=""
-fi
-if [[ $nline1 =~ "transmission" ]]; then
-        call=$(echo "$nline1" | cut -d " " -f 14 )
-	tg=$(echo "$nline1" | cut -d " " -f 17)
-        call2="$call"
-        ln1=""
-	if [ "$cm" == 1 ]; then
-		tput cuu 1
-#		tput el 1
-#		tput el
+	if [[ $nline1 =~ "header" ]]; then
+   		cm=1
+ 		call=$(echo "$nline1" | cut -d " " -f 12) 
+		tg=$(echo "$nline1" | cut -d " " -f 15)
+        	call1="$call"
+        	ln2=""
 	fi
-        cm=2
-fi
-if [[ $nline1 =~ "watchdog" ]]; then
-        cm=3
-fi
+	if [[ $nline1 =~ "transmission" ]]; then
+        	call=$(echo "$nline1" | cut -d " " -f 14 )
+		tg=$(echo "$nline1" | cut -d " " -f 17)
+        	call2="$call"
+        	ln1=""
+		if [ "$cm" == 1 ]; then
+			tput cuu 1
+		fi
+        	cm=2
+	fi
+	if [[ $nline1 =~ "watchdog" ]]; then
+        	cm=3
+	fi
 
-if [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
-   tput cuu 1
-fi
+	if [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
+   		tput cuu 1
+	fi
 }
 
 
@@ -168,21 +166,28 @@ do
 	getuserinfo
 	checkcall
 
-	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
+#	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
+	if [ "$cm" == 1 ]; then
 		printf '\e[0;35m'
 		getserver
+		tput el 1
+		tput el
 		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg $server"
 		lcm=1
-
+		call2=""
+		lastcall2="n/a"
 	fi
 
  	Time=$(date '+%T')  
+
 	if [ "$lastcall2" != "$call2" ] && [ "$cm" == 2 ]; then
 		if [ "$call2" == "$netcont" ]; then
 			getserver
 			sudo mount -o remount,rw /
+		tput el 1
+		tput el
 			
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont    $tg $server                  "          
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name    $tg $server                  "          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
@@ -201,6 +206,8 @@ do
 			getuserinfo
 			printf '\e[0;36m'
 			lcm=0
+			tput el 1
+			tput el
 			printf "KeyUp %-8s %-6s  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
 			callstat=""
 		fi
@@ -209,25 +216,30 @@ do
 			## Write New Call to Screen
 			cnt=$((cnt+1))
 			printf '\e[1;32m'
-	#		echo -e '\e[1;32m'"$Time -- $call --  $name, $city, $state, $country  Dur:$durt"" sec"  PL:"$pl"	
 
+			tput el 1
+			tput el
 			printf "%-4d New %-8s -- %-6s -- %-12s %-14s %-14s  %-12s %-14s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 			lcm=0
 			Logit
 		fi
 		if [ "$callstat" == "Dup" ] && [ "$cm" == 2 ]; then
 			## Write Duplicate Info to Screen
-#			echo  -e '\e[0;33m'"Duplicate -- $ckt -- $call  $name  Dur:$durt"" sec  PL: $pl"
 			lcm=0
-		tput el 1
-		tput el
+			tput el 1
+			tput el
 			printf '\e[0;33m'
 			printf "Duplicate %-3s - %-15s - %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
 		fi
 
 		lastcall2="$call2"
 	fi
-	
+
+	if [ "$lcm" == 1 ] && [ "$cm" != 1 ]; then
+		tput cuu 1
+	fi	
+
+
 	if [ "$cm" == 3 ] && [ "$lastcall3" != "$call" ]; then
 		printf '\e[1;31m'
 		tput el 1
