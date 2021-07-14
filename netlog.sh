@@ -123,6 +123,7 @@ if [[ $nline1 =~ "header" ]]; then
 fi
 if [[ $nline1 =~ "transmission" ]]; then
         call=$(echo "$nline1" | cut -d " " -f 14 )
+	tg=$(echo "$nline1" | cut -d " " -f 17)
         call2="$call"
         ln1=""
 	if [ "$cm" == 1 ]; then
@@ -152,7 +153,7 @@ if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlo
 else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 	cnt=$((cntt))
-	echo "Restart Prugram - Counter = $cnt"
+	echo "Restart Program - Counter = $cnt"
 #	echo "New Header $cntt"
 #	tput cuu 1
 #	tput el 1
@@ -181,7 +182,7 @@ do
 			getserver
 			sudo mount -o remount,rw /
 			
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $server "          
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont    $tg $server                  "          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
