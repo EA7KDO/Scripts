@@ -135,6 +135,7 @@ if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlo
 else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 	cnt=$((cntt))
+	echo "Restart Prugram - Counter = $cnt"
 #	echo "New Header $cntt"
 #	tput cuu 1
 #	tput el 1
@@ -161,8 +162,8 @@ do
 		if [ "$call2" == "$netcont" ]; then
 			sudo mount -o remount,rw /
 
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont "
-			echo -e "0,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont                           "
+			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 
 			name=""
 			city=""
@@ -182,7 +183,7 @@ do
 			lcm=0
 #			printf "KeyUp %-10s %-8s %-14s %-5s sec\n" "$Time" "$call" "$name" "$durt"
 #			printf "KeyUp %-8s %-6s %-13s %-17s %-18s %-14s %-16s %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
-			printf "KeyUp %-8s %s,  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
+			printf "KeyUp %-8s %-6s  %s,  %s,  %s,  %s,  %s,  %s\n" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl"	
 			callstat=""
 		fi
 
@@ -203,7 +204,7 @@ do
 		tput el 1
 		tput el
 			printf '\e[0;33m'
-			printf "Duplicate %-3s -- %-15s -- %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
+			printf "Duplicate %-3s - %-15s - %-8s %-12s %-14s %-9s\n" "$cnt2" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
 		fi
 
 		lastcall2="$call2"
