@@ -59,7 +59,7 @@ if [ $Addr = "127.0.0.1" ]; then
 	NName=$(sed -nr "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 	server="$NName"
 else
-	ms=$(sudo sed -n '/^[^#]*'"$Addr"'/p' /usr/local/etc/DMR_Hosts.txt | sed -E "s/[[:space:]]+/|/g" | cut -d'|' -f1)
+	ms=$(sudo sed -n '/^[^#]*'"$Addr"'/p' /usr/local/etc/DMR_Hosts.txt | head -n1 | sed -E "s/[[:space:]]+/|/g" | cut -d'|' -f1)
  	server=$(echo "$ms" | cut -d " " -f1)
 #	server="$ms"
 fi
@@ -181,7 +181,7 @@ do
 			tput el 1
 			tput el
 		fi
-		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg"
+		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg  $server"
 		lcm=1
 		call2=""
 		lastcall2="n/a"
@@ -197,7 +197,7 @@ do
 		tput el 1
 		tput el
 			
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name    $tg "          
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 			
 			name=""
