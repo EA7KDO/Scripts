@@ -40,7 +40,7 @@ function header(){
 	echo "0, Net Log Started $dates" > /home/pi-star/netlog.log
 	echo ""
 
-	if [ ! "$P1" ] || [ "$P1" == "NEW" ]; then
+	if [ ! "$netcont" ] || [ "$netcont" == "NEW" ]; then
 		echo "No Net Controller Specified"
 		netcont="N/A"
 	else
@@ -50,11 +50,11 @@ function header(){
 }
 
 function getserver(){
-Addr=$(sed -nr "/^\[DMR Network\]/ { :l /^Address[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/mmdvmhost)
-fg=$(ls /var/log/pi-star/DMRGateway* | tail -n1)
 
+Addr=$(sed -nr "/^\[DMR Network\]/ { :l /^Address[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/mmdvmhost)
 
 if [ $Addr = "127.0.0.1" ]; then
+	fg=$(ls /var/log/pi-star/DMRGateway* | tail -n1)
 	NetNum=$(sudo tail -n1 "$fg" | cut -d " " -f 6)
 	NName=$(sed -nr "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
   	server="$NName"
@@ -133,6 +133,7 @@ function getnewcall(){
 	fi
 	if [[ $nline1 =~ "watchdog" ]]; then
         	cm=3
+        	call2="$call"
 	fi
 
 	if [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
@@ -241,10 +242,14 @@ do
 
 
 	if [ "$cm" == 3 ] && [ "$lastcall3" != "$call" ]; then
+        	call2="$call"
+		durt=$(echo "$nline1" | cut -d " " -f 18 )
+		pl=$(echo "$nline1" | cut -d " " -f 20 )
+		dur=$(printf "%1.0f\n" $durt)
 		printf '\e[1;31m'
 		tput el 1
 		tput el
-		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, PL:$pl        "
+		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
 		lastcall3="$call"
 		lcm=0
 	fi
@@ -252,5 +257,6 @@ do
 		tput cuu 1
 		lcm=0
 	fi
+sleep 1
 done
 
