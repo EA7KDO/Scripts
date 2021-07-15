@@ -171,8 +171,12 @@ do
 	if [ "$cm" == 1 ]; then
 		printf '\e[0;35m'
 		getserver
-		tput el 1
-		tput el
+		if [ "$lcm" == 1 ]; then
+			tput cuu 1
+		else
+			tput el 1
+			tput el
+		fi
 		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg $server"
 		lcm=1
 		call2=""
