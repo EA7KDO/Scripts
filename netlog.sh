@@ -164,6 +164,9 @@ do
 	cm=0	
 
 	getnewcall
+	if [ ! "$call" ]; then
+         call="$netcont"
+	fi
 	getuserinfo
 	checkcall
 
