@@ -57,10 +57,11 @@ if [ $Addr = "127.0.0.1" ]; then
 	fg=$(ls /var/log/pi-star/DMRGateway* | tail -n1)
 	NetNum=$(sudo tail -n1 "$fg" | cut -d " " -f 6)
 	NName=$(sed -nr "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
-  	server="$NName"
+	server="$NName"
 else
 	ms=$(sudo sed -n '/^[^#]*'"$Addr"'/p' /usr/local/etc/DMR_Hosts.txt | sed -E "s/[[:space:]]+/|/g" | cut -d'|' -f1)
- 	server="$ms"
+ 	server=$(echo "$ms" | cut -d " " -f1)
+#	server="$ms"
 fi
 }
 
@@ -170,20 +171,21 @@ do
 	getuserinfo
 	checkcall
 
-#	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
-	if [ "$cm" == 1 ]; then
+	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
+#	if [ "$cm" == 1 ]; then
 		printf '\e[0;35m'
 		getserver
 		if [ "$lcm" == 1 ]; then
-			tput cuu 1
+			tput cuu 2
 		else
 			tput el 1
 			tput el
 		fi
-		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg $server"
+		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg"
 		lcm=1
 		call2=""
 		lastcall2="n/a"
+		lastcall1="$call1"
 	fi
 
  	Time=$(date '+%T')  
@@ -195,9 +197,9 @@ do
 		tput el 1
 		tput el
 			
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name    $tg $server                  "          
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name    $tg "          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
-
+			
 			name=""
 			city=""
 			state=""
