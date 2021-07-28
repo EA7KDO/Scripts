@@ -30,7 +30,25 @@ cm=0
 lcm=0
 ber=0
 netcontdone=0
- 
+nodupes=0
+
+err_report() {
+    echo "Error on line $1"
+}
+
+trap 'err_report $LINENO' ERR
+
+function help(){
+#echo "Syntax : \./netlog.sh Param1 Param2 Param3"
+echo "All Parameters are optional"
+echo "Param1 can be  any one of three things "
+echo "1) Net Controller Call Sign.  If used This must be Param 1"
+echo "2) The word 'NEW' This will initalize the Log File"
+echo "3) The word 'NODUPES' This will stop the display from showing Dupes"
+echo "Param 2 and 3 may be any cobination of items 2 and 3 above"
+}
+
+
 function header(){
 	clear
 	set -e sudo mount -o remount,rw / 
@@ -54,51 +72,52 @@ function header(){
 
 function getserver(){
 
-Addr=$(sed -nr "/^\[DMR Network\]/ { :l /^Address[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/mmdvmhost)
-
+Addr=$(sed -n -r "/^\[DMR Network\]/ { :l /^Address[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/mmdvmhost)
 if [ $Addr = "127.0.0.1" ]; then
 	fg=$(ls /var/log/pi-star/DMRGateway* | tail -n1)
 	NetNum=$(sudo tail -n1 "$fg" | cut -d " " -f 6)
-	NName=$(sed -nr "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
-	server="$NName"
+	server=$(sed -n -r "/^\[DMR Network "${NetNum##*( )}"\]/ { :l /^Name[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 else
 	ms=$(sudo sed -n '/^[^#]*'"$Addr"'/p' /usr/local/etc/DMR_Hosts.txt | head -n1 | sed -E "s/[[:space:]]+/|/g" | cut -d'|' -f1)
  	server=$(echo "$ms" | cut -d " " -f1)
-#	server="$ms"
 fi
 }
 
 function getuserinfo(){
- 	line=$(sed -n '/'"$call"',/p' /usr/local/etc/stripped.csv | tail -n1)	
+	if [ "$cm" != 6 ] && [ ! -z  "$call" ]; then
+ 		line=$(sed -n '/'"$call"',/p' /usr/local/etc/stripped.csv | tail -n1)	
 
-	if [ line ]; then
-		name=$(echo "$line" | cut -d "," -f 3 | cut -d " " -f 1)
-		city=$(echo "$line"| cut -d "," -f 5)
-		state=$(echo "$line" | cut -d "," -f 6)
-		country=$(echo "$line" | cut -d "," -f 7)
-	else
-		callinfo="No Info"
-		name=""
-		city=""
-		state=""
-		country=""
+		if [ line ]; then
+			name=$(echo "$line" | cut -d "," -f 3 | cut -d " " -f 1)
+			city=$(echo "$line"| cut -d "," -f 5)
+			state=$(echo "$line" | cut -d "," -f 6)
+			country=$(echo "$line" | cut -d "," -f 7)
+		else
+			callinfo="No Info"
+			name=""
+			city=""
+			state=""
+			country=""
+		fi
 	fi
 }
 
 function checkcall(){
-	num=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1) 
-	if [ -z "$num" ]; then 
-     		callstat="New"
-	#	echo "New $call"
+	if [ "$cm" != 6 ]; then
+	
+		num=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1) 
+		if [ -z "$num" ]; then 
+     			callstat="New"
 		
-	else
-#		echo "Duplicate $call"
-     		callstat="Dup"
-		cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
-		ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 3)
-		ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 2)
-#		echo "Dupe Cnt = $cnt2d"
-	fi	
+		else
+#			echo "Duplicate $call"
+     			callstat="Dup"
+			cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
+			ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 3)
+			ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 2)
+#			echo "Dupe Cnt = $cnt2d"
+		fi	
+	fi
 }
 
 function Logit(){
@@ -118,8 +137,7 @@ function getnewcall(){
 		tg=$(echo "$nline1" | cut -d " " -f 15)
         	call1="$call"
         	ln2=""
-	fi
-	if [[ $nline1 =~ "transmission" ]]; then
+	elif [[ $nline1 =~ "transmission" ]]; then
         	call=$(echo "$nline1" | cut -d " " -f 14 )
 		if [[ $nline1 =~ "RF" ]]; then
 			durt=$(echo "$nline1" | cut -d " " -f 18)
@@ -139,13 +157,20 @@ function getnewcall(){
 		if [ "$cm" == 1 ]; then
 			tput cuu 1
 		fi
-	fi
-	if [[ $nline1 =~ "watchdog" ]]; then
+	
+	elif [[ $nline1 =~ "watchdog" ]]; then
         	cm=5
         	call2="$call"
-	fi
-
-	if [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
+	
+	elif [[ $nline1 =~ "overflow" ]]; then
+        	cm=6
+        	call2="NA"
+	
+	elif [[ $nline1 =~ "Data" ]]; then
+        	cm=6
+        	call2="NA"
+	
+	elif [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
    		tput cuu 1
 	fi
 }
@@ -153,6 +178,10 @@ function getnewcall(){
 
 
 ######## Start of Main Program
+if [ "$netcont" == "HELP" ]; then
+	help
+	exit
+fi
 
 if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
 	## Delete and start a new data file starting with date line
@@ -162,6 +191,16 @@ else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 	cnt=$((cntt))
 	echo "Restart Program - Counter = $cnt"
+fi
+
+if [ "$netcont" == "NODUPES" ] || [ "$stat" == "NODUPES" ]; then
+	nodupes=1
+	echo "Dupes Will Not be Displayed"
+	echo ""
+else
+	nodupes=0
+	echo "Dupes Will Be Displayed"
+	echo ""
 fi
 
 getnewcall
@@ -180,15 +219,19 @@ do
 	cm=0	
 
 	getnewcall
-	getuserinfo
-	checkcall
+	if [ -z "$call" ]; then
+		cm=0
+	else
+		getuserinfo
+		checkcall
+		getserver
+	fi
 
 #if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
 
 	if [ "$cm" == 1 ]; then
 		printf '\e[0;40m'
 		printf '\e[0;35m'
-		getserver
 		if [ "$lcm" == 1 ]; then
 			tput cuu 2
 		else
@@ -209,7 +252,6 @@ do
 	fi
 
 	if [ "$cm" == 2 ] && [ "$call" == "$netcont" ] && [ "$netcontdone" != 1 ]; then
-			getserver
 			sudo mount -o remount,rw /
 			tput el 1
 			tput el
@@ -238,15 +280,15 @@ do
 					printf '\e[0;40m'
 					printf '\e[1;36m'
 					cnt=$((cnt+1))
-					printf "%-3s New KeyUp   %-8s -- %-6s %s,  %s,  %s,  %s,  %s,  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
+printf "%-3s New KeyUp  %-8s -- %-6s %s, %s, %s, %s, %s, %s, TG:%s  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl" "$tg" "$server"	
 					Logit
 				fi
 				
-				if [ "$callstat" == "Dup" ]; then
+				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
 					printf '\e[0;46m'
 					printf '\e[0;33m'
 					cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
-					printf "KeyUp Dupe %-3s %-8s %-6s  %s,  %s,  %s,  %s,  %s,  %s\n" "$cnt2d" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
+printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
 				fi	
 #				echo "Dupe Callstat = $callstat $dur"
 			else
@@ -259,18 +301,18 @@ do
 
 					tput el 1
 					tput el
-					printf "%-3s New Call    %-8s -- %-6s %s,  %s,  %s,  %s,  %s,  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
+printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
 					lcm=0
 					Logit
 				fi
-				if [ "$callstat" == "Dup" ]; then
+				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
 					## Write Duplicate Info to Screen
 					lcm=0
 					tput el 1
 					tput el
 					printf '\e[0;46m'
 					printf '\e[0;33m'
-					printf "Duplicate %-3s %-15s %-8s %-12s %-14s %-9s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "Dur: $durt sec" "PL: $pl" 
+printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
 				fi
 			
 			fi
