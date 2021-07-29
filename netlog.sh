@@ -11,7 +11,7 @@ set -o pipefail
 set -e 
 #set -x
 
-ver=20210714
+ver=20210729
 
 sudo mount -o remount,rw / 
 
@@ -178,6 +178,7 @@ function getnewcall(){
 
 
 ######## Start of Main Program
+
 if [ "$netcont" == "HELP" ]; then
 	help
 	exit
@@ -190,7 +191,7 @@ if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlo
 else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 	cnt=$((cntt))
-	echo "Restart Program - Counter = $cnt"
+	echo "Restart Program Ver:$ver - Counter = $cnt"
 fi
 
 if [ "$netcont" == "NODUPES" ] || [ "$stat" == "NODUPES" ]; then
