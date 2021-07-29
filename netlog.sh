@@ -178,6 +178,10 @@ function getnewcall(){
 
 
 ######## Start of Main Program
+if [ "$netcont" == "HELP" ]; then
+	help
+	exit
+fi
 
 if [ "$netcont" == "HELP" ]; then
 	help
@@ -192,6 +196,16 @@ else
 	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
 	cnt=$((cntt))
 	echo "Restart Program Ver:$ver - Counter = $cnt"
+fi
+
+if [ "$netcont" == "NODUPES" ] || [ "$stat" == "NODUPES" ]; then
+	nodupes=1
+	echo "Dupes Will Not be Displayed"
+	echo ""
+else
+	nodupes=0
+	echo "Dupes Will Be Displayed"
+	echo ""
 fi
 
 if [ "$netcont" == "NODUPES" ] || [ "$stat" == "NODUPES" ]; then
