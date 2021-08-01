@@ -11,7 +11,7 @@ set -o pipefail
 set -e 
 #set -x
 
-ver=20210729
+ver=20210801
 
 sudo mount -o remount,rw / 
 
@@ -21,8 +21,12 @@ lastcall2=""
 lastcall1=""
 P1="$1" 
 P2="$2" 
+P3="$3" 
+P1S=${P1^^} 
+P2S=${P2^^} 
+P3S=${P3^^} 
 netcont=${P1^^} 
-stat=${P2^^} 
+stat=${P2^^}
 #echo "$netcont"   "$stat" 
 dur=$((0)) 
 cnt=$((0))
@@ -154,9 +158,9 @@ function getnewcall(){
 		tg=$(echo "$nline1" | cut -d " " -f 17)
         	call2="$call"
         	ln1=""
-		if [ "$cm" == 1 ]; then
-			tput cuu 1
-		fi
+#		if [ "$cm" == 1 ]; then
+#			tput cuu 1
+#		fi
 	
 	elif [[ $nline1 =~ "watchdog" ]]; then
         	cm=5
@@ -169,10 +173,11 @@ function getnewcall(){
 	elif [[ $nline1 =~ "Data" ]]; then
         	cm=6
         	call2="NA"
-	
-	elif [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
-   		tput cuu 1
 	fi
+	
+#	elif [ "$cm" != 1 ] && [ "lcm" == 1 ]; then
+#   		tput cuu 1
+#	fi
 }
 
 
@@ -194,7 +199,7 @@ else
 	echo "Restart Program Ver:$ver - Counter = $cnt"
 fi
 
-if [ "$netcont" == "NODUPES" ] || [ "$stat" == "NODUPES" ]; then
+if [ "$P1S" == "NODUPES" ] || [ "$P2S" == "NODUPES" ] || [ "$P3S" == "NODUPES" ]; then
 	nodupes=1
 	echo "Dupes Will Not be Displayed"
 	echo ""
@@ -228,23 +233,28 @@ do
 		getserver
 	fi
 
-#if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ]; then
-
-	if [ "$cm" == 1 ]; then
+if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
+#	echo "$lastcall1  $call1  $lcm   $cm"
+#	if [ "$cm" == 1 ]; then
 		printf '\e[0;40m'
 		printf '\e[0;35m'
-		if [ "$lcm" == 1 ]; then
-			tput cuu 2
-		else
-			tput el 1
-			tput el
-		fi
-		echo "    Active Transmission from $call1 $name, $city, $state, $country  $tg  $server"
+#		if [ "$lcm" == 1 ]; then
+#			tput cuu 1
+#		else
+#			tput el 1
+#			tput el
+#		fi
+		tput sc
+#		printf "    Active Transmission from $call1 $name, $city, $state, $country  $tg  $server" 
+		printf "    Active Transmission from $call1 $name, $server" 
+		tput rc
+		
 		lcm=1
 		call2=""
 		lastcall2="n/a"
 		lastcall1="$call1"
-	fi
+#	fi
+fi
 
  	Time=$(date '+%T')  
 	
@@ -321,9 +331,9 @@ printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 		fi
 	fi
 
-	if [ "$lcm" == 1 ] && [ "$cm" != 1 ]; then
-		tput cuu 1
-	fi	
+#	if [ "$lcm" == 1 ] && [ "$cm" != 1 ]; then
+#		tput cuu 1
+#	fi	
 
 
 	if [ "$cm" == 5 ] && [ "$lastcall3" != "$call" ]; then
@@ -339,9 +349,11 @@ printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 		lastcall3="$call"
 		lcm=0
 	fi
-	if [ "$lcm" == 1 ]; then
-		tput cuu 1
-		lcm=0
+	if [ "$lcm" != 1 ]; then
+#		tput cuu 1
+#		lcm=0
+#	else
+		lastcall1=""
 	fi
 sleep 0.75
 #wait
