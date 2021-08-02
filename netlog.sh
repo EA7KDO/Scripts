@@ -14,6 +14,7 @@ set -e
 ver=20210801
 
 sudo mount -o remount,rw / 
+printf '\e[9;1t'
 
 callstat="" 
 callinfo="No Info" 
@@ -244,11 +245,12 @@ if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
 #			tput el 1
 #			tput el
 #		fi
+		tput rmam
 		tput sc
 #		printf "    Active Transmission from $call1 $name, $city, $state, $country  $tg  $server" 
-		printf "    Active Transmission from $call1 $name, $server" 
+		printf "    Active $call1 $name, $country $tg  $server" 
 		tput rc
-		
+		tput smam
 		lcm=1
 		call2=""
 		lastcall2="n/a"
@@ -266,10 +268,12 @@ fi
 			sudo mount -o remount,rw /
 			tput el 1
 			tput el
+		tput rmam
 			printf '\e[0;40m'			
 			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
-			
+		tput smam
+	
 			name=""
 			city=""
 			state=""
@@ -291,8 +295,12 @@ fi
 					printf '\e[0;40m'
 					printf '\e[1;36m'
 					cnt=$((cnt+1))
+		tput rmam
+
 printf "%-3s New KeyUp  %-8s -- %-6s %s, %s, %s, %s, %s, %s, TG:%s  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl" "$tg" "$server"	
-					Logit
+		tput smam
+		
+			Logit
 				fi
 				
 				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
@@ -312,8 +320,12 @@ printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 
 					tput el 1
 					tput el
+		tput rmam
+
 printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
-					lcm=0
+		tput smam
+		
+			lcm=0
 					Logit
 				fi
 				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
@@ -323,8 +335,12 @@ printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:
 					tput el
 					printf '\e[0;46m'
 					printf '\e[0;33m'
+		tput rmam
+
 printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
-				fi
+		tput smam
+		
+		fi
 			
 			fi
 			lastcall2="$call"
@@ -345,7 +361,9 @@ printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 		printf '\e[1;31m'
 		tput el 1
 		tput el
+		tput rmam
 		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
+		tput smam
 		lastcall3="$call"
 		lcm=0
 	fi
