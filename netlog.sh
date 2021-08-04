@@ -9,7 +9,8 @@
 set -o errexit 
 set -o pipefail 
 set -e 
-#set -x
+set -o errtrace
+set -E -o functrace
 
 ver=20210801
 
@@ -36,12 +37,33 @@ lcm=0
 ber=0
 netcontdone=0
 nodupes=0
+rf=0
 
 err_report() {
     echo "Error on line $1"
 }
 
 trap 'err_report $LINENO' ERR
+
+fnEXIT()
+{
+
+  # Clear the bottom line of the screen
+#  tput cup "${LINES}" 0
+
+#  tput cup 11 22
+ tput cuu1
+ tput el
+ tput el1 
+  echo -e "${BOLD}${WHI}THANK YOU FOR USING NETLOG by VE3RD!${SGR0}${DEF}"
+#  tput cup 22 0
+
+#  rm "${STATIC_TG_LIST}" 2> /dev/null
+  exit
+
+}
+
+trap fnEXIT SIGINT SIGTERM
 
 function help(){
 #echo "Syntax : \./netlog.sh Param1 Param2 Param3"
@@ -144,16 +166,21 @@ function getnewcall(){
         	ln2=""
 	elif [[ $nline1 =~ "transmission" ]]; then
         	call=$(echo "$nline1" | cut -d " " -f 14 )
+
 		if [[ $nline1 =~ "RF" ]]; then
 			durt=$(echo "$nline1" | cut -d " " -f 18)
 			dur=$(printf "%1.0f\n" $durt)
-			ber=$(echo "$nline1" | cut -d " " -f 21)
+			ber=$(echo "$nline1" | sed -n -e 's/^.*BER: //p' | cut -d " " -f1)
 			cm=2
-		else
+			rf=1
+		fi	
+
+		if [[ $nline1 =~ "network" ]]; then	
 			durt=$(echo "$nline1" | cut -d " " -f 18 )
 			dur=$(printf "%1.0f\n" $durt)
 			pl=$(echo "$nline1" | cut -d " " -f 20 )
 			cm=2
+			rf=0
 		fi
 		
 		tg=$(echo "$nline1" | cut -d " " -f 17)
@@ -228,6 +255,7 @@ do
 	getnewcall
 	if [ -z "$call" ]; then
 		cm=0
+		lcm=0
 	else
 		getuserinfo
 		checkcall
@@ -247,8 +275,7 @@ if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
 #		fi
 		tput rmam
 		tput sc
-#		printf "    Active Transmission from $call1 $name, $city, $state, $country  $tg  $server" 
-		printf "    Active $call1 $name, $country $tg  $server" 
+		echo -en "    Active QSO from $call1 $name, $country, $tg,  $server" 
 		tput rc
 		tput smam
 		lcm=1
@@ -268,12 +295,15 @@ fi
 			sudo mount -o remount,rw /
 			tput el 1
 			tput el
-		tput rmam
-			printf '\e[0;40m'			
+			tput rmam
+			printf '\e[0;40m'		
+		if [ "$rf" == 1 ]; then
+			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
+		else	
 			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
+		fi	
 			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
-		tput smam
-	
+			tput smam
 			name=""
 			city=""
 			state=""
@@ -295,21 +325,27 @@ fi
 					printf '\e[0;40m'
 					printf '\e[1;36m'
 					cnt=$((cnt+1))
-		tput rmam
-
-printf "%-3s New KeyUp  %-8s -- %-6s %s, %s, %s, %s, %s, %s, TG:%s  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl" "$tg" "$server"	
-		tput smam
-		
-			Logit
+					tput rmam
+					if [ "$rf" == 1 ]; then
+						printf "%-3s New KeyUp  %-8s -- %-6s %s, %s, %s, %s, %s, %s, TG:%s  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "Dur: $durt sec"  "BER: $ber" "RF: $tg" "$server"		
+					else
+						printf "%-3s New KeyUp  %-8s -- %-6s %s, %s, %s, %s, %s, %s, TG:%s  %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl" "$tg" "$server"	
+					fi
+					tput smam
+					Logit
 				fi
 				
 				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
 					printf '\e[0;46m'
 					printf '\e[0;33m'
 					cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
-printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
-				fi	
-#				echo "Dupe Callstat = $callstat $dur"
+					if [ "$rf" == 1 ]; then
+						printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" "Dur: $durt sec"  "RF: BER: $ber "	
+					else
+						printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl "	
+					fi	
+				fi
+				#	echo "Dupe Callstat = $callstat $dur"
 			else
 
 				if [ "$callstat" == "New" ]; then
@@ -317,15 +353,16 @@ printf "KeyUp Dupe %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 					cnt=$((cnt+1))
 					printf '\e[0;40m'
 					printf '\e[1;36m'
-
 					tput el 1
 					tput el
-		tput rmam
-
-printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
-		tput smam
-		
-			lcm=0
+					tput rmam
+					if [ "$rf" == 1 ]; then
+						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, BER:%s RF: TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$ber" "$tg"  "$server"	
+					else
+						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
+					fi
+					tput smam
+					lcm=0
 					Logit
 				fi
 				if [ "$callstat" == "Dup" ] && [ "$nodupes" == 0 ]; then
@@ -335,11 +372,13 @@ printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:
 					tput el
 					printf '\e[0;46m'
 					printf '\e[0;33m'
-		tput rmam
-
-printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
-		tput smam
-		
+					tput rmam
+					if [ "$rf" == 1 ]; then
+						printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "RF: BER: $ber"	
+					else			
+						printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
+					fi
+					tput smam
 		fi
 			
 			fi
@@ -373,7 +412,7 @@ printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ck
 #	else
 		lastcall1=""
 	fi
-sleep 0.75
+sleep 1.5
 #wait
 done
 
