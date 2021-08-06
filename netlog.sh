@@ -12,7 +12,7 @@ set -e
 set -o errtrace
 set -E -o functrace
 
-ver=20210801
+ver=20210805
 
 sudo mount -o remount,rw / 
 printf '\e[9;1t'
@@ -40,7 +40,7 @@ nodupes=0
 rf=0
 
 err_report() {
-    echo "Error on line $1"
+    echo "Error on line $1 for call $call"
 }
 
 trap 'err_report $LINENO' ERR
@@ -64,6 +64,7 @@ fnEXIT()
 }
 
 trap fnEXIT SIGINT SIGTERM
+
 
 function help(){
 #echo "Syntax : \./netlog.sh Param1 Param2 Param3"
@@ -139,10 +140,10 @@ function checkcall(){
 		else
 #			echo "Duplicate $call"
      			callstat="Dup"
-			cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
-			ck=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 3)
-			ckt=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 2)
-#			echo "Dupe Cnt = $cnt2d"
+			line4=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 )
+			cnt2d=$(echo "$line4" | cut -d "," -f 1)
+			ck=$(echo "$line4" | cut -d "," -f 3)
+			ckt=$(echo "$line4" | cut -d "," -f 2)
 		fi	
 	fi
 }
