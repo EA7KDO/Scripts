@@ -38,6 +38,9 @@ ber=0
 netcontdone=0
 nodupes=0
 rf=0
+ldts=""
+dts=""
+nline1=""
 
 err_report() {
     echo "Error on line $1 for call $call"
@@ -132,18 +135,15 @@ function getuserinfo(){
 
 function checkcall(){
 	if [ "$cm" != 6 ]; then
-	
-		num=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1) 
-		if [ -z "$num" ]; then 
+ 		logline=$(sed -n '/'"$call"',/p' /home/pi-star/netlog.log)	
+		if [ -z "$logline" ]; then 
      			callstat="New"
-		
 		else
-#			echo "Duplicate $call"
      			callstat="Dup"
-			line4=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 )
-			cnt2d=$(echo "$line4" | cut -d "," -f 1)
-			ck=$(echo "$line4" | cut -d "," -f 3)
-			ckt=$(echo "$line4" | cut -d "," -f 2)
+#			cnt2d=$(sed -n '/'"$call"'/p' /home/pi-star/netlog.log | head -n1 | cut -d "," -f 1)
+			cnt2d=$(echo "$logline" |  cut -d "," -f 1)
+			ck=$(echo "$logline" | cut -d "," -f 3)
+			ckt=$(echo "$logline" | cut -d "," -f 2)
 		fi	
 	fi
 }
@@ -154,19 +154,19 @@ function Logit(){
 	echo "$cnt,$Time,$call,$name,$city,$state,$country " >> /home/pi-star/netlog.log
 }
 
+
 function getnewcall(){
-        f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
-        nline1=$(tail -n 1 "$f1")
 	tg=""
 
-	if [[ $nline1 =~ "header" ]]; then
+	NewCall=$(echo "$nline1" | sed -n -e 's/^.*from //p' | cut -d " " -f1)
+	call="$NewCall"
+
+	if [[ $nline1 =~ "header" ]] || [[ $nline1 =~ "entry" ]]; then
    		cm=1
- 		call=$(echo "$nline1" | cut -d " " -f 12) 
 		tg=$(echo "$nline1" | cut -d " " -f 15)
         	call1="$call"
         	ln2=""
 	elif [[ $nline1 =~ "transmission" ]]; then
-        	call=$(echo "$nline1" | cut -d " " -f 14 )
 
 		if [[ $nline1 =~ "RF" ]]; then
 			durt=$(echo "$nline1" | cut -d " " -f 18)
@@ -193,8 +193,9 @@ function getnewcall(){
 	
 	elif [[ $nline1 =~ "watchdog" ]]; then
         	cm=5
-        	call2="$call"
-	
+		checkcall
+        	call2="$call1"
+	       	Logit
 	elif [[ $nline1 =~ "overflow" ]]; then
         	cm=6
         	call2="NA"
@@ -209,71 +210,17 @@ function getnewcall(){
 #	fi
 }
 
-
-
-######## Start of Main Program
-
-if [ "$netcont" == "HELP" ]; then
-	help
-	exit
-fi
-
-if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
-	## Delete and start a new data file starting with date line
-	dates=$(date '+%A %Y-%m-%d %T')
-        header 
-else
-	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
-	cnt=$((cntt))
-	echo "Restart Program Ver:$ver - Counter = $cnt"
-fi
-
-if [ "$P1S" == "NODUPES" ] || [ "$P2S" == "NODUPES" ] || [ "$P3S" == "NODUPES" ]; then
-	nodupes=1
-	echo "Dupes Will Not be Displayed"
-	echo ""
-else
-	nodupes=0
-	echo "Dupes Will Be Displayed"
-	echo ""
-fi
-
-getnewcall
-callstat=""
-if [ ! "$call" ]; then
-	call="$netcont"
-	lastcall="$netcont"
-	lastcall1="$netcont"
-	lastcall2="$netcont"
-fi
-
-######### Main Loop Starts Here
-
-while true
-do 
-	cm=0	
-
+function ProcessNewCall(){
 	getnewcall
-	if [ -z "$call" ]; then
-		cm=0
-		lcm=0
-	else
-		getuserinfo
-		checkcall
-		getserver
-	fi
+	getuserinfo
+	checkcall
+	getserver
+
+###  Active QSO
 
 if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
-#	echo "$lastcall1  $call1  $lcm   $cm"
-#	if [ "$cm" == 1 ]; then
 		printf '\e[0;40m'
 		printf '\e[0;35m'
-#		if [ "$lcm" == 1 ]; then
-#			tput cuu 1
-#		else
-#			tput el 1
-#			tput el
-#		fi
 		tput rmam
 		tput sc
 		echo -en "    Active QSO from $call1 $name, $country, $tg,  $server" 
@@ -283,14 +230,7 @@ if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
 		call2=""
 		lastcall2="n/a"
 		lastcall1="$call1"
-#	fi
 fi
-
- 	Time=$(date '+%T')  
-	
-	if [ "$call" != "$netcont" ]; then 
-		netcontdone=0 
-	fi
 
 	if [ "$cm" == 2 ] && [ "$call" == "$netcont" ] && [ "$netcontdone" != 1 ]; then
 			sudo mount -o remount,rw /
@@ -299,11 +239,12 @@ fi
 			tput rmam
 			printf '\e[0;40m'		
 		if [ "$rf" == 1 ]; then
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
+#			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
+			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
 		else	
-			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
+			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
 		fi	
-			echo -e "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
+			printf "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
 			tput smam
 			name=""
 			city=""
@@ -311,10 +252,12 @@ fi
 			country=""
 			callstat="NC"		
 			netcontdone=1
+		
 	fi
 
 	if [ "$cm" == 2 ] && [ "$call" != "$netcont" ]; then
 		lastcall1=""
+		call1=""
 		if [ "$lastcall2" != "$call" ]; then
 			if [ $dur -lt 2 ]; then
 				#### Keyup < 2 seconds
@@ -393,7 +336,8 @@ fi
 
 
 	if [ "$cm" == 5 ] && [ "$lastcall3" != "$call" ]; then
-        	call2="$call"
+        	call2="$call1"
+		call="$call1"
 		durt=$(echo "$nline1" | cut -d " " -f 11 )
 		pl=$(echo "$nline1" | cut -d " " -f 13 )
 		dur=$(printf "%1.0f\n" $durt)
@@ -402,7 +346,14 @@ fi
 		tput el 1
 		tput el
 		tput rmam
-		echo "$Time - DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
+		checkcall
+		if [ "$callstat" == "New" ]; then
+			cnt=$((cnt+1))
+			echo "$cnt - New $Time - DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
+		fi	
+		if [ "$callstat" == "Dup" ]; then
+			echo "$Time - Dup $cnt2d DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
+		fi	
 		tput smam
 		lastcall3="$call"
 		lcm=0
@@ -413,7 +364,74 @@ fi
 #	else
 		lastcall1=""
 	fi
-sleep 1.5
-#wait
+
+
+	LPCall="$call"
+}
+
+
+function GetLastLine(){
+        f1=$(ls -tv /var/log/pi-star/MMDVM* | tail -n 1 )
+        nline1=$(tail -n 1 "$f1")
+	fdate=$(echo "$nline1" | cut -d " " -f2)
+	ftime=$(echo "$nline1" | cut -d " " -f3)
+	fdts="$fdate"":""$ftime"
+	fdts="$fdate"":""$ftime"
+
+#	echo "$fdts"" --  ""$lfdts"
+   
+	if [ "$lfdts" != "$fdts" ]; then
+		ProcessNewCall
+		lfdts="$fdts"	
+	fi 
+}
+
+######## Start of Main Program
+
+if [ "$netcont" == "HELP" ]; then
+	help
+	exit
+fi
+if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
+	## Delete and start a new data file starting with date line
+	dates=$(date '+%A %Y-%m-%d %T')
+        header 
+else
+	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
+	cnt=$((cntt))
+	echo "Restart Program Ver:$ver - Counter = $cnt"
+fi
+
+
+if [ "$P1S" == "NODUPES" ] || [ "$P2S" == "NODUPES" ] || [ "$P3S" == "NODUPES" ]; then
+	nodupes=1
+	echo "Dupes Will Not be Displayed"
+	echo ""
+else
+	nodupes=0
+	echo "Dupes Will Be Displayed"
+	echo ""
+fi
+
+getnewcall
+callstat=""
+if [ ! "$call" ]; then
+	call="$netcont"
+	lastcall="$netcont"
+	lastcall1="$netcont"
+	lastcall2="$netcont"
+fi
+
+######### Main Loop Starts Here
+
+while true
+do 
+	cm=0	
+ 	Time=$(date '+%T')  
+
+	GetLastLine
+
+
+	sleep 1.0
 done
 
