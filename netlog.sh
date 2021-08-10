@@ -31,52 +31,61 @@ netcont=${P1^^}
 stat=${P2^^}
 #echo "$netcont"   "$stat" 
 dur=$((0)) 
-cnt=$((0))
-cm=0
-lcm=0
-ber=0
-netcontdone=0
-nodupes=0
-rf=0
-ldts=""
-dts=""
+cnt=$((0)) 
+cm=0 
+lcm=0 
+ber=0 
+netcontdone=0 
+nodupes=0 
+rf=0 
+ldts="" 
+dts="" 
 nline1=""
+calli=""
 
-err_report() {
-    echo "Error on line $1 for call $call"
+err_report() { 
+	echo "Error on line $1 for call: $call"
+	./netlog.sh ReStart 
 }
 
 trap 'err_report $LINENO' ERR
 
-fnEXIT()
-{
+fnEXIT() {
 
-  # Clear the bottom line of the screen
-#  tput cup "${LINES}" 0
-
-#  tput cup 11 22
  tput cuu1
  tput el
  tput el1 
   echo -e "${BOLD}${WHI}THANK YOU FOR USING NETLOG by VE3RD!${SGR0}${DEF}"
-#  tput cup 22 0
-
-#  rm "${STATIC_TG_LIST}" 2> /dev/null
-  exit
-
+  echo -e "Press CTRL-Z to Exit"
+  
 }
 
 trap fnEXIT SIGINT SIGTERM
 
 
+function getinput()
+{
+	tput el
+	tput el1
+	calli=" "
+	echo -n "Type a Call Sign and press enter: ";
+	read calli
+	call=${calli^^} 
+	echo ""
+	stty sane
+	cm=2
+	ProcessNewCall K
+}
+
+
 function help(){
-#echo "Syntax : \./netlog.sh Param1 Param2 Param3"
-echo "All Parameters are optional"
-echo "Param1 can be  any one of three things "
-echo "1) Net Controller Call Sign.  If used This must be Param 1"
-echo "2) The word 'NEW' This will initalize the Log File"
-echo "3) The word 'NODUPES' This will stop the display from showing Dupes"
-echo "Param 2 and 3 may be any cobination of items 2 and 3 above"
+	#echo "Syntax : \./netlog.sh Param1 Param2 Param3"
+	echo "All Parameters are optional"
+	echo "Param1 can be  any one of three things "
+	echo "1) Net Controller Call Sign.  If used This must be Param 1"
+	echo "2) The word 'NEW' This will initalize the Log File"
+	echo "3) The word 'NODUPES' This will stop the display from showing Dupes"
+	echo "Param 2 and 3 may be any cobination of items 2 and 3 above"
 }
 
 
@@ -211,14 +220,20 @@ function getnewcall(){
 }
 
 function ProcessNewCall(){
-	getnewcall
+	if [ ! "$1" ]; then
+		getnewcall
+	fi
 	getuserinfo
 	checkcall
 	getserver
+	if [ "$1" ]; then
+		dur=5
+		pl=""
+	fi
 
 ###  Active QSO
 
-if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
+	if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
 		printf '\e[0;40m'
 		printf '\e[0;35m'
 		tput rmam
@@ -230,7 +245,7 @@ if [ "$lastcall1" != "$call1" ] && [ "$cm" == 1 ] && [ "$lcm" != 1 ]; then
 		call2=""
 		lastcall2="n/a"
 		lastcall1="$call1"
-fi
+	fi
 
 	if [ "$cm" == 2 ] && [ "$call" == "$netcont" ] && [ "$netcontdone" != 1 ]; then
 			sudo mount -o remount,rw /
@@ -303,7 +318,12 @@ fi
 					if [ "$rf" == 1 ]; then
 						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, BER:%s RF: TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$ber" "$tg"  "$server"	
 					else
-						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, $s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
+					    if [ "$1" ]; then
+						tput cuu 2
+						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, %s  KeyBd, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$tg"  "$server"	
+					    else
+						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, %s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
+					    fi
 					fi
 					tput smam
 					lcm=0
@@ -320,7 +340,12 @@ fi
 					if [ "$rf" == 1 ]; then
 						printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "RF: BER: $ber"	
 					else			
+					    if [ "$1" ]; then
+						tput cuu 2
+						printf " KeyBd Dup %-3s %-15s %-6s %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country"	
+					    else
 						printf " Duplicate %-3s %-15s %-6s %s, %s, %s, %s, %s, %s\n" "$cnt2d" "$Time/$ckt" "$call" "$name" "$city" "$state" "$country" " Dur: $durt sec"  "PL: $pl               "	
+					    fi
 					fi
 					tput smam
 		fi
@@ -387,32 +412,34 @@ function GetLastLine(){
 }
 
 ######## Start of Main Program
+if [ "$netcont" != "ReStart" ]; then
 
-if [ "$netcont" == "HELP" ]; then
-	help
-	exit
+	if [ "$netcont" == "HELP" ]; then
+		help
+		exit
+	fi
+
+	if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
+		## Delete and start a new data file starting with date line
+		dates=$(date '+%A %Y-%m-%d %T')
+        	header 
+	elif [ "$netcont" != "ReStart" ]; then
+		cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
+		cnt=$((cntt))
+		echo "Restart Program Ver:$ver - Counter = $cnt"
+	fi
+
+
+	if [ "$P1S" == "NODUPES" ] || [ "$P2S" == "NODUPES" ] || [ "$P3S" == "NODUPES" ]; then
+		nodupes=1
+		echo "Dupes Will Not be Displayed"
+		echo ""
+	else
+		nodupes=0
+		echo "Dupes Will Be Displayed"
+		echo ""
+	fi
 fi
-if [ "$netcont" == "NEW" ] || [ "$stat" == "NEW" ] || [ ! -f /home/pi-star/netlog.log ]; then
-	## Delete and start a new data file starting with date line
-	dates=$(date '+%A %Y-%m-%d %T')
-        header 
-else
-	cntt=$(tail -n 1 /home/pi-star/netlog.log | cut -d "," -f 1)
-	cnt=$((cntt))
-	echo "Restart Program Ver:$ver - Counter = $cnt"
-fi
-
-
-if [ "$P1S" == "NODUPES" ] || [ "$P2S" == "NODUPES" ] || [ "$P3S" == "NODUPES" ]; then
-	nodupes=1
-	echo "Dupes Will Not be Displayed"
-	echo ""
-else
-	nodupes=0
-	echo "Dupes Will Be Displayed"
-	echo ""
-fi
-
 getnewcall
 callstat=""
 if [ ! "$call" ]; then
@@ -431,7 +458,11 @@ do
 
 	GetLastLine
 
-
 	sleep 1.0
+while read -t1  
+  do getinput
+done
+
+
 done
 
