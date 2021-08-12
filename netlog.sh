@@ -86,6 +86,11 @@ function help(){
 	echo "2) The word 'NEW' This will initalize the Log File"
 	echo "3) The word 'NODUPES' This will stop the display from showing Dupes"
 	echo "Param 2 and 3 may be any cobination of items 2 and 3 above"
+echo ""
+	echo "You can manually enter a call sign."
+	echo "1) Press ENTER"
+	echo "2) Enter a Call Sign"
+	echo "3) Press ENTEE"
 }
 
 
@@ -125,7 +130,7 @@ fi
 
 function getuserinfo(){
 	if [ "$cm" != 6 ] && [ ! -z  "$call" ]; then
- 		line=$(sed -n '/'"$call"',/p' /usr/local/etc/stripped.csv | tail -n1)	
+ 		line=$(sed -n '/'",$call"',/p' /usr/local/etc/stripped.csv | head -n1)	
 
 		if [ line ]; then
 			name=$(echo "$line" | cut -d "," -f 3 | cut -d " " -f 1)
@@ -255,11 +260,11 @@ function ProcessNewCall(){
 			printf '\e[0;40m'		
 		if [ "$rf" == 1 ]; then
 #			echo -e '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
-			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server"          
+			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name BER:$ber  $tg   $server\n"          
 		else	
-			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server"          
+			printf '\e[1;34m'"-------------------- $Time  Net Control $netcont $name   $tg   $server\n"          
 		fi	
-			printf "$cnt,--------------------- $Time  Net Control $netcont " >> /home/pi-star/netlog.log
+			printf "$cnt,--------------------- $Time  Net Control $netcont \n" >> /home/pi-star/netlog.log
 			tput smam
 			name=""
 			city=""
@@ -322,7 +327,7 @@ function ProcessNewCall(){
 						tput cuu 2
 						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, %s  KeyBd, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$tg"  "$server"	
 					    else
-						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s, %s  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
+						printf "%-3s New Call   %-8s -- %-6s %s, %s, %s, %s,  Dur:%s Secs, PL:%s, TG:%s %s\n" "$cnt" "$Time" "$call" "$name" "$city" "$state" "$country" "$durt"  "$pl" "$tg"  "$server"	
 					    fi
 					fi
 					tput smam
@@ -381,7 +386,7 @@ function ProcessNewCall(){
 		fi	
 		tput smam
 		lastcall3="$call"
-		lcm=0
+		lcm=5
 	fi
 	if [ "$lcm" != 1 ]; then
 #		tput cuu 1
