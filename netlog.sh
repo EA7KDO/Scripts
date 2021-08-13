@@ -12,7 +12,7 @@ set -e
 set -o errtrace
 set -E -o functrace
 
-ver=20210805
+ver=202108012
 
 sudo mount -o remount,rw / 
 printf '\e[9;1t'
@@ -56,7 +56,7 @@ fnEXIT() {
  tput el
  tput el1 
   echo -e "${BOLD}${WHI}THANK YOU FOR USING NETLOG by VE3RD!${SGR0}${DEF}"
-  echo -e "Press CTRL-Z to Exit"
+  exit
   
 }
 
@@ -208,8 +208,9 @@ function getnewcall(){
 	elif [[ $nline1 =~ "watchdog" ]]; then
         	cm=5
 		checkcall
-        	call2="$call1"
+        	call5="$call"
 	       	Logit
+
 	elif [[ $nline1 =~ "overflow" ]]; then
         	cm=6
         	call2="NA"
@@ -365,9 +366,8 @@ function ProcessNewCall(){
 #	fi	
 
 
-	if [ "$cm" == 5 ] && [ "$lastcall3" != "$call" ]; then
-        	call2="$call1"
-		call="$call1"
+	if [ "$cm" == 5 ] && [ "$lastcall5" != "$call" ]; then
+        	call5="$call"
 		durt=$(echo "$nline1" | cut -d " " -f 11 )
 		pl=$(echo "$nline1" | cut -d " " -f 13 )
 		dur=$(printf "%1.0f\n" $durt)
@@ -385,7 +385,7 @@ function ProcessNewCall(){
 			echo "$Time - Dup $cnt2d DMR Network Watchdog Timer has Expired for $call, $name, $dur Sec   PL:$pl        "
 		fi	
 		tput smam
-		lastcall3="$call"
+		lastcall5="$call"
 		lcm=5
 	fi
 	if [ "$lcm" != 1 ]; then
