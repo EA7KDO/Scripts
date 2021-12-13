@@ -90,10 +90,25 @@ exit
 
 ## Select User Screens
 getcall
-
+S1=""
+S2=""
+if [ -f "/usr/local/etc/NX4832K035.tft" ]; then
+   S1="NX4832K035"
+   S1A=" Available     "
+else 
+   S1="NX4832K035"
+   S1A=" Not Available "
+fi
+if [ -f "/usr/local/etc/NX3224K024.tft" ]; then
+   S2="NX3224K024"
+   S2A=" Available     "
+else
+   S2="NX3224K024"
+   S2=" Not Available "
+fi
 result=$(whiptail --title "Get $calltxt Screen Package From Github" --menu "Choose Your Nextion Screen Type" --backtitle "This Script by VE3RD $ver" 25 78 16 \
-"NX3224K024" "2.4 Inch Nextion Screen." \
-"NX4832K035" "3.5 Inch Nextion Screen." \
+"$S1" "$S1A 3.5 Inch Nextion Screen" \
+"$S2" "$S2A 2.4 Inch Nextion Screen" \
 "Abort" "Exit Script" 3>&1 1>&2 2>&3)
 
 errt="$?"
@@ -204,7 +219,7 @@ execution_time=`printf "%.2f seconds" $duration`
 
 
 txt="$calltxt Scripts Loaded: $execution_time"
-whiptail --title "$title" --msgbox "$txt" 8 80
+whiptail --title "$title" --msgbox "$txt" 8 90
 
 echo -e '\e[1;40m'
 clear
