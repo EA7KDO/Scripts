@@ -96,13 +96,8 @@ fi
 
 #echo " End Processing Parameters  - $scn $call"
 
-if [ ! -d /home/pi-star/Nextion_Temp ]; then
-   sudo mkdir /home/pi-star/Nextion_Temp
-fi
-
 #Start Duration Timer
 start=$(date +%s.%N)
-
 
 #Disable all command feedback
 if [ ! "$fb" ]; then
@@ -141,20 +136,12 @@ getea7kdo
 if [ ! -d /usr/local/etc/Nextion_Support ]; then
 	sudo mkdir /usr/local/etc/Nextion_Support
 else
-       sudo rm /usr/local/etc/Nextion_Support/*
+   	sudo rm /usr/local/etc/Nextion_Support/*
 fi
 
 sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
-sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
+sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
 
-if [ -f /home/pi-star/Nextion_Temp/profiles.txt ]; then
-	if [ ! -f /usr/local/etc/Nextion_Support/profiles.txt ]; then
-        	if [ "$fb" ]; then
-                	echo "Replacing Missing Profiles.txt"
-        	fi
-        	sudo cp  /home/pi-star/Nextion_Temp/profiles.txt /usr/local/etc/Nextion_Support/
-	fi
-fi
 
 model="$scn"
 if [ "$fb" ]; then
