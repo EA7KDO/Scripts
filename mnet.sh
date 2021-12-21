@@ -50,20 +50,20 @@ m2="0000"
 m3="mnet.hopto.org"
 m5="62031"
 
-	textstr="$m1\t\t$m2\t$m3\t\t\t$m4\t\t$m5"
+textstr="$m1\t\t$m2\t$m3\t\t\t$m4\t\t$m5"
 
-        sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
+sudo sed -i "\$a$textstr" /root/DMR_Hosts.txt
 
-        echo "Updating Hostfiles..."
+echo "Updating Hostfiles..."
 
-        sudo /usr/local/sbin/HostFilesUpdate.sh
+sudo /usr/local/sbin/HostFilesUpdate.sh
 
-        if [ "$?" == "0" ]; then
-                echo "Host Files Successfully Updated"
-        else
-                echo "Host File Update Failed!"
-        fi
-        echo ""
+if [ "$?" == "0" ]; then
+	echo "Host Files Successfully Updated"
+else
+	echo "Host File Update Failed!"
+fi
+echo ""
 
 
 
