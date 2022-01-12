@@ -7,7 +7,7 @@
 #  and returns a script duration time to the Screen 	#
 #  as a script completion flag				#
 #							#
-#  KF6S/VE3RD                               2020-05-07  #
+#  KF6S/VE3RD                               2021-12-21  #
 #########################################################
 # Use screen model from command $1
 # Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
@@ -52,6 +52,25 @@ function exitcode
 
 }
 
+function cleandirs()
+{
+if [ -d /usr/local/etc/Nextion_Support ]; then
+    sudo rm -R /usr/local/etc/Nextion_Support
+fi
+if [ -d /home/pi-star/Nextion_Temp ]; then
+    sudo rm -R /home/pi-star/Nextion_Temp
+fi
+if [ -f /usr/local/etc/"$model$tft" ]; then
+	sudo rm /usr/local/etc/NX*.tft
+fi
+if [ "$fb" ]; then
+    echo "Removed /usr/local/etc/Nextion_Support Directory"
+    echo "Removed /home/pi-star/Nextion_Temp Directory"
+    echo "Remove Existing $model$tft"
+fi
+
+}
+
 # EA7KDO Script Function
 function getea7kdo
 {
@@ -60,19 +79,31 @@ function getea7kdo
 	calltxt="EA7KDO"
 
     	if [ "$scn" == "NX3224K024" ]; then
-
-		##  New Github Location  for the 24 inch screen - Remove the comment # when active
-	#	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 /home/pi-star/Nextion_Temp
-
-		### Old Github Location for the 24 ionch screen - Remove this line when the new location becomes active
+		cleandirs
 	  	sudo git clone --depth 1 https://github.com/EA7KDO/Nextion.Images /home/pi-star/Nextion_Temp
-		tst=1
+		chmod +x /home/pi-star/Nextion_Temp
+		mkdir /usr/local/etc/Nextion_Support
+		sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
+		sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
+		if [ "$fb" ]; then
+		    	echo "Downloaded new Screen package for $model$tft"
+			echo "Copied new tft to /usr/local/etc/"	
+		fi
+tst=1		
 	fi     
 	if [ "$scn" == "NX4832K035" ]; then
+		cleandirs
 	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX4832K035 /home/pi-star/Nextion_Temp
-		tst=2
+		sudo chmod +x /home/pi-star/Nextion_Temp
+		mkdir /usr/local/etc/Nextion_Support
+		sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
+		sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
+		if [ "$fb" ]; then
+		    	echo "Downloaded new Screen package for $model$tft"
+			echo "Copied new tft to /usr/local/etc/"	
+		fi
      	fi
-	
+tst=2	
 	if [ "$tst" == 0 ]; then
 		errtext="Invalid EA7KDO Screen Name $scn"	
 		exitcode 
@@ -118,40 +149,10 @@ sudo systemctl stop cron.service  > /dev/null
 # Using /home/pi-star/Nextion_Temp/
 
 
-#Test for /home/pi-star/Nextion_Temp and remove it, if it exists
-
-if [ -d /home/pi-star/Nextion_Temp ]; then
-  	sudo rm -R /home/pi-star/Nextion_Temp
-fi
-
-  # Get Nextion Screen/Scripts and support files from github
-  # Get EA7KDO File Set
-
-tst=0
-
 getea7kdo
  
-
-
-if [ ! -d /usr/local/etc/Nextion_Support ]; then
-	sudo mkdir /usr/local/etc/Nextion_Support
-else
-   	sudo rm /usr/local/etc/Nextion_Support/*
-fi
-
-sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
-sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
-
-
 model="$scn"
-if [ "$fb" ]; then
-    echo "Remove Existing $model$tft and copy in the new one"
-fi
 
-if [ -f /usr/local/etc/"$model$tft" ]; then
-	sudo rm /usr/local/etc/NX*.tft
-fi
-sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
 
 
  FILE=/usr/local/etc/"$model$tft"
@@ -165,14 +166,15 @@ sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
 sudo systemctl start cron.service  > /dev/null
 
 duration=$(echo "$(date +%s.%N) - $start" | bc)
-execution_time=`printf "%.2f seconds" $duration`
+execution_time=`printf "%.2f secs" $duration`
 
 if [ ! "$fb" ]; then
  exec 2>&3
 fi 
 
-echo "$scn Ready  $execution_time"
 
+# echo "$scn Ready  $execution_time"
+echo "$scn Ready to Flash! $execution_time"
 
 
 
