@@ -15,13 +15,17 @@ if [ -z "$1" ]; then
          exit
 fi
 
+call="$1"
 #NAME=$(cat /usr/local/etc/stripped.csv | grep -w -F $1 | head -1 | awk -F, '{print $3}')
 
 #mt=$(sudo sed -n '/'"$1"'/p' /usr/local/etc/stripped.csv | head -1 | cut -d',' -f1)
-mt=$(sudo sed -n '/'"$1"'/p' /usr/local/etc/stripped.csv | head -1)
+mt=$(sudo sed -n '/'"$call",'/p' /usr/local/etc/stripped.csv | head -1)
 if [ -z "$mt" ]; then
-    echo "Not Found"
-   exit
+        mt=$(sudo sed -n '/'"$call",'/p' /usr/local/etc/stripped2.csv | head -1)
+        if [ -z "$mt" ]; then
+                echo "Not Found"
+                exit
+        fi
 fi
 
 Id=$(echo "$mt" | cut -d',' -f1)
@@ -55,10 +59,13 @@ echo "$State"
 echo "$Country"
 ;;
 34)
-echo "$Name1 $Name2"
+echo "$Name1|$Name2"
 ;;
 567)
-echo "$City $State $Country"
+echo "$City|$State|$Country"
+;;
+567)
+echo "$Name1|$City|$State|$Country"
 ;;
 esac
 
