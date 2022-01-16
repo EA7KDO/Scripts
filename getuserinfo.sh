@@ -37,9 +37,9 @@ State=$(echo "$mt" | cut -d',' -f6)
 Country=$(echo "$mt" | cut -d',' -f7)
 
 if [ -z "$2" ]; then
-	mode="567"
+	mode="3567"
 else
-	mode= "$2"
+	mode="$2"
 fi
 
 case "$mode" in
@@ -65,10 +65,13 @@ echo "$State"
 echo "$Country"
 ;;
 34)
-echo "$Name1 $Name2"
+echo "$Name1|$Name2"
 ;;
 567)
-echo "$City $State $Country"
+echo "$City|$State|$Country"
+;;
+3567)
+echo "$Name1|$City|$State|$Country"
 ;;
 esac
 
