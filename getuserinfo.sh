@@ -19,56 +19,56 @@ call="$1"
 #NAME=$(cat /usr/local/etc/stripped.csv | grep -w -F $1 | head -1 | awk -F, '{print $3}')
 
 #mt=$(sudo sed -n '/'"$1"'/p' /usr/local/etc/stripped.csv | head -1 | cut -d',' -f1)
-mt=$(sudo sed -n '/'."$call",'/p' /usr/local/etc/stripped.csv | head -n 1)
-
+mt=$(sudo sed -n '/'"$call",'/p' /usr/local/etc/stripped.csv | head -1)
 if [ -z "$mt" ]; then
-     	if [ -f /usr/local/etc/stripped2.csv ]; then
-        	mt=$(sudo sed -n '/'"$call",'/p' /usr/local/etc/stripped2.csv | head -1)
-		if [ -z "$mt" ]; then
-        	        echo "Not Found"
-                	exit
-        	fi	
-	fi
+        mt=$(sudo sed -n '/'"$call",'/p' /usr/local/etc/stripped2.csv | head -1)
+        if [ -z "$mt" ]; then
+                echo "Not Found"
+                exit
+        fi
 fi
 
-Id=$(echo "$mt" | cut -d ',' -f 1)
-Call=$(echo "$mt" | cut -d ',' -f 2)
-Name1=$(echo "$mt" | cut -d ',' -f 3)
-Name2=$(echo "$mt" | cut -d ',' -f 4)
-City=$(echo "$mt" | cut -d ',' -f 5)
-State=$(echo "$mt" | cut -d ',' -f 6)
-Country=$(echo "$mt" | cut -d ',' -f 7)
+Id=$(echo "$mt" | cut -d',' -f1)
+Call=$(echo "$mt" | cut -d',' -f2)
+Name1=$(echo "$mt" | cut -d',' -f3)
+Name2=$(echo "$mt" | cut -d',' -f4)
+City=$(echo "$mt" | cut -d',' -f5)
+State=$(echo "$mt" | cut -d',' -f6)
+Country=$(echo "$mt" | cut -d',' -f7)
 
-case "$2" in
+if [ -z "$2" ]; then
+	mode="567"
+else
+	mode= "$2"
+fi
+
+case "$mode" in
 "1")
 echo "$Id"
 ;;
 "2")
 echo "$Call"
 ;;
-"3")
+3)
 echo "$Name1"
 ;;
-"4")
+4)
 echo "$Name2"
 ;;
-"5")
+5)
 echo "$City"
 ;;
-"6")
+6)
 echo "$State"
 ;;
-"7")
+7)
 echo "$Country"
 ;;
-"34")
-echo "$Name1|$Name2"
+34)
+echo "$Name1 $Name2"
 ;;
-"567")
-echo "$City|$State|$Country"
-;;
-"3567")
-echo "$Name1|$City|$State|$Country"
+567)
+echo "$City $State $Country"
 ;;
 esac
 
