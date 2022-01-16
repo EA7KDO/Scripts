@@ -158,6 +158,7 @@ case $CHOICE in
 	   ;;
 	5)
 		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+#		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
 		exit
 	   ;;
 	6)   echo " You Chose to Quit"

@@ -182,6 +182,10 @@ fi
 sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
 sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
 
+sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
+mount -o remount,rw 
+sudo wget https://database.radioid.net/static/user.csv -O /usr/local/etc/stripped.csv
+
 if [ -f /home/pi-star/Nextion_Temp/profiles.txt ]; then
 	if [ ! -f /usr/local/etc/Nextion_Support/profiles.txt ]; then
         	if [ "$fb" ]; then
