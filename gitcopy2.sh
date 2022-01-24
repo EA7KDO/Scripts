@@ -15,11 +15,14 @@ parm="$1"
 ver="20200512"
 declare -i tst
 sudo dialog --create-rc > /dev/null
-sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
-sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
-sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
+sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
+sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 echo -e '\e[1;44m'
-clear
+
+if [ ! "$1" ]; then
+	clear
+fi
 
 # EA7KDO Script Function
 function getea7kdo
@@ -143,7 +146,7 @@ model="$scn"
 tft='.tft' 
 #gz='.gz'
 #Put Pi-Star file system in RW mode
-sudo mount -o remount,rw /
+sudo mount -o remount,rw / > /dev/null
 sleep 1s
 
 #Stop the cron service
@@ -184,7 +187,7 @@ sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
 sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
 
 sudo rsync -avqru /home/pi-star/Scripts/stripped2.csv  /usr/local/etc/
-mount -o remount,rw 
+sudo mount -o remount,rw / 
 sudo wget https://database.radioid.net/static/user.csv -O /usr/local/etc/stripped.csv
 
 if [ -f /home/pi-star/Nextion_Temp/profiles.txt ]; then
@@ -227,7 +230,11 @@ txt="$calltxt Scripts Loaded: $execution_time"
 whiptail --title "$title" --msgbox "$txt" 8 90
 
 echo -e '\e[1;40m'
-clear
+
+if [ ! "$1" ]; then
+	clear
+fi
 
 
+sudo mount -o remount,ro /
 
