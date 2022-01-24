@@ -81,7 +81,7 @@ function getea7kdo
     	if [ "$scn" == "NX3224K024" ]; then
 		cleandirs
 	  	sudo git clone --depth 1 https://github.com/EA7KDO/Nextion.Images /home/pi-star/Nextion_Temp
-		chmod +x /home/pi-star/Nextion_Temp
+		chmod +x /home/pi-star/Nextion_Temp/*.sh
 		mkdir /usr/local/etc/Nextion_Support
 		sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
 		sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
@@ -94,7 +94,7 @@ tst=1
 	if [ "$scn" == "NX4832K035" ]; then
 		cleandirs
 	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX4832K035 /home/pi-star/Nextion_Temp
-		sudo chmod +x /home/pi-star/Nextion_Temp
+		sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
 		mkdir /usr/local/etc/Nextion_Support
 		sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
 		sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
