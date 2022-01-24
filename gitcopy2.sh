@@ -14,6 +14,7 @@
 parm="$1"
 ver="20200512"
 declare -i tst
+sudo dialog --create-rc > /dev/null
 sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
@@ -182,7 +183,7 @@ fi
 sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
 sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
 
-sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
+sudo rsync -avqru /home/pi-star/Scripts/stripped2.csv  /usr/local/etc/
 mount -o remount,rw 
 sudo wget https://database.radioid.net/static/user.csv -O /usr/local/etc/stripped.csv
 
