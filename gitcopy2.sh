@@ -11,6 +11,12 @@
 #########################################################
 # Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
 # Valid Screen Names for VE3RD - NX3224K024
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
 parm="$1"
 ver="20220124"
 declare -i tst
