@@ -12,16 +12,16 @@
 # Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
 # Valid Screen Names for VE3RD - NX3224K024
 
-if [[ $EUID -ne 0 ]]; then
-	clear
-	echo ""
-   	echo "This script must be run as root"
-	echo "Setting root user"
-	echo "Re-Start Script"
-	echo ""
-	sudo su
+#if [[ $EUID -ne 0 ]]; then
+#	clear
+#	echo ""
+ #  	echo "This script must be run as root"
+#	echo "Setting root user"
+#	echo "Re-Start Script"
+#	echo ""
+#	sudo su
   # 	exit 1
-fi
+#fi
 
 who=$(whoami)
 echo "This script is running as $who user"
@@ -29,10 +29,19 @@ sleep 2
 
 run=""
 
-parm="$1"
+parm1="$1"
+parm2="$2"
 ver="20220124"
 declare -i tst
-sudo dialog --create-rc > /dev/null
+
+export NCURSES_NO_UTF8_ACS=1
+
+if [ ! -f ~/.dialog ]; then
+# j=1
+# else
+ sudo dialog --create-rc ~/.dialogrc
+fi
+
 sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
@@ -91,7 +100,7 @@ function getcall
 {
 #Set Screen Author
 calltxt=""
-if [ "$parm" == VE3RD ]; then
+if [ "$parm2" == VE3RD ]; then
 	calltxt="VE3RD"
 else
 	calltxt="EA7KDO"
@@ -146,7 +155,7 @@ if [ "$errt" == 1 ]||[ "$result" == "Abort" ]; then
      exitcode
 fi
 
-if [ "$calltxt" = "VE3RD" ]; then
+if [ "$calltxt" == "VE3RD" ]; then
 	if [ "$result" == "NX3224K024" ]; then
 #echo "Trap2"
 		scn="$result"
