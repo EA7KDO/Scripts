@@ -13,9 +13,21 @@
 # Valid Screen Names for VE3RD - NX3224K024
 
 if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 
-   exit 1
+	clear
+	echo ""
+   	echo "This script must be run as root"
+	echo "Setting root user"
+	echo "Re-Start Script"
+	echo ""
+	sudo su
+  # 	exit 1
 fi
+
+who=$(whoami)
+echo "This script is running as $who user"
+sleep 2
+
+run=""
 
 parm="$1"
 ver="20220124"
@@ -42,7 +54,7 @@ if [ -d /home/pi-star/Nextion_Temp ]; then
 fi
 
     	if [ "$scn" == "NX3224K024" ]; then
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/Nextion.Images /home/pi-star/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 /home/pi-star/Nextion_Temp
 		tst=1
 	fi     
 	if [ "$scn" == "NX4832K035" ]; then
@@ -65,6 +77,9 @@ fi
 	if [ "$scn" = "NX3224K024" ]; then	
 	 	tst=1  
 	  	sudo git clone --depth 1 https://github.com/VE3RD/Nextion /home/pi-star/Nextion_Temp
+	elif [ "$scn" == "NX4832K035" ]; then
+	  	sudo git clone --depth 1 https://github.com/VE3RD/NX4832K035 /home/pi-star/Nextion_Temp
+		tst=2
 	else
 		errtext="Invalid VE3RD Screen Name $scn,  $s1,  $s2"
 		exitcode 
@@ -91,12 +106,12 @@ This Script will Now Stop
 
 whiptail --title " Programmed Exit Function" --msgbox "$txt"  8 78
 echo -e '\e[1;40m'
-
+run="Done"
 exit
 
 }
 
-#### Sart of Main Code
+#### Start of Main Code
 
 ## Select User Screens
 getcall
@@ -114,7 +129,7 @@ if [ -f "/usr/local/etc/NX3224K024.tft" ]; then
    S2A=" Available     "
 else
    S2="NX3224K024"
-   S2=" Not Available "
+   S2A=" Not Available "
 fi
 result=$(whiptail --title "Get $calltxt Screen Package From Github" --menu "Choose Your Nextion Screen Type" --backtitle "This Script by VE3RD $ver" 25 78 16 \
 "$S1" "$S1A 3.5 Inch Nextion Screen" \
@@ -127,16 +142,16 @@ scn="$result"
 
 if [ "$errt" == 1 ]||[ "$result" == "Abort" ]; then
      errtext="Abort Chosen From Main Menu err=$errt"
-echo "Trap1"
+#echo "Trap1"
      exitcode
 fi
 
 if [ "$calltxt" = "VE3RD" ]; then
 	if [ "$result" == "NX3224K024" ]; then
-echo "Trap2"
+#echo "Trap2"
 		scn="$result"
 	else
-echo "Trap3"
+#echo "Trap3"
 		errtext=" Invalid  Screen name for $calltxt"
 	fi
 fi
@@ -241,6 +256,5 @@ if [ -z "$1" ]; then
 	clear
 fi
 
-
 sudo mount -o remount,ro /
-
+exit
