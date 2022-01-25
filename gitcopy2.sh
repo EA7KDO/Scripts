@@ -12,7 +12,7 @@
 # Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
 # Valid Screen Names for VE3RD - NX3224K024
 parm="$1"
-ver="20200512"
+ver="20220124"
 declare -i tst
 sudo dialog --create-rc > /dev/null
 sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
@@ -20,7 +20,7 @@ sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 echo -e '\e[1;44m'
 
-if [ ! "$1" ]; then
+if [ -z "$1" ]; then
 	clear
 fi
 
@@ -231,7 +231,7 @@ whiptail --title "$title" --msgbox "$txt" 8 90
 
 echo -e '\e[1;40m'
 
-if [ ! "$1" ]; then
+if [ -z "$1" ]; then
 	clear
 fi
 
