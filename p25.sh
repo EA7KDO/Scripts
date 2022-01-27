@@ -21,7 +21,9 @@ m3="tgif.network"
 m5="62031"
 
 	textstr="10210\t\mnet.hopto.org\t41000"
+        sudo sed -i "\$a$textstr" /root/P25Hosts.txt
 
+	textstr="10211\t\mnet.hopto.org\t41010"
         sudo sed -i "\$a$textstr" /root/P25Hosts.txt
 
         echo "Updating Hostfiles..."
