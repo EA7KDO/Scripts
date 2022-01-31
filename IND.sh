@@ -44,7 +44,7 @@ echo " "
 sleep 3
 
 continue=0
-
+####################
 function preparedir
 {
                 if [ -d /Nextion ] ; then
@@ -52,13 +52,15 @@ function preparedir
                 fi
 		sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
 }
-preparedir2 () {
+####################
+function preparedir2 () {
   if [ ! -d /Nextion ] ; then
              echo "Downloading Files to create /Nextion Directory"
                 sudo git clone https://github.com/on7lds/NextionDriverInstaller.git /Nextion/
   fi
 
 }
+##################
 function installnxd
 {
 
@@ -101,7 +103,12 @@ function installnxd
 
 }
 
+function clearcomments()
+{
+sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
 
+}
+##############################  MAIN PROGRAM #################
 if [ ! -d /temp ] ; then
    sudo mkdir /temp
 fi
@@ -275,6 +282,9 @@ case $CHOICE in
         esac
 
 	sudo mount -o remount,rw /
+
+	# Clear all comment flags on Nextion Driver Block, DMRid lines
+	sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
 
 	echo "Installing BC"
 	sudo apt-get install bc
