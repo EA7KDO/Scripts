@@ -284,7 +284,7 @@ case $CHOICE in
 	sudo mount -o remount,rw /
 
 	# Clear all comment flags on Nextion Driver Block, DMRid lines
-	sudo sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
+	sudo sed '/^#DMRid/s/^#//g' -i /etc/mmdvmhost
 	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX1=\).*/\15/m;P;d'  /etc/mmdvmhost
 	echo "Installing BC"
 	sudo apt-get install bc
