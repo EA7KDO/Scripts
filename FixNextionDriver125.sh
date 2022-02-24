@@ -6,7 +6,7 @@ if grep -Fq SendUserDataMask /etc/mmdvmhost; then
 	echo "SendUserDataMask Found"
  else     
 	echo "Inserting SendUserDataMask"
-	sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00011110' /etc/mmdvmhost
+	sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00111110' /etc/mmdvmhost
 fi
 
 sudo nextiondriver.service start
