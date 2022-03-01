@@ -12,6 +12,7 @@ gitcopy3.sh		Test Package - Do Not Use
 gitcopy.sh		gicopy for use by Nextion Screens
 IND_Dev.sh		Test Package -n Do Not Use
 IND.sh			Nextion Driver Installation Utility
+installfunctions.sh	Install Funtions.php to correct the Not Linked Issue on P25
 lookup.sh		Set User Lookup to either QRZ or RadioID
 mnet.sh			Set MNET Custom Talk Groups
 NextionDriver		Corrected Nextion Driver Ver R1.25
@@ -21,11 +22,10 @@ nss2.info		Info for nss2.sh
 nss2.sh			Utility to Modify DMRHosts Files - Obsolete
 nss.info		Info for nss.sh
 nss.sh			Utility to Modify DMRHosts Files - Obsolete
+p35mnet.sh		Add MNET P25 TG's to Custom P25Hosts file
 prime.sh		Set TGIF Security Custom Talk Groups
 README.md		Read Me File
 setfw.sh		Set Firewall ports for Nextion Screens
 stripped2.csv		Extra stripped.csv filled by YSF entries.
 update.sh		Update the Pi-Star Hosts files
 user.csv		Nextion Driver is now using user.csv as default
-installfunctions.sh	Install Funtions.php to correct the Not Linked Issue on P25
-p35mnet.sh		Add MNET P25 TG's to Custom P25Hosts file
