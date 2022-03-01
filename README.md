@@ -28,3 +28,4 @@ stripped2.csv		Extra stripped.csv filled by YSF entries.
 update.sh		Update the Pi-Star Hosts files
 user.csv		Nextion Driver is now using user.csv as default
 installfunctions.sh	Install Funtions.php to correct the Not Linked Issue on P25
+p35mnet.sh		Add MNET P25 TG's to Custom P25Hosts file
