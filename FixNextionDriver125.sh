@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo mount -o remount,rw /
 sudo nextiondriver.service stop
 sudo rm /usr/local/bin/NextionDriver
 sudo cp NextionDriver /usr/local/bin/

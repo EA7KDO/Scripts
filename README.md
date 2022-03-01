@@ -27,3 +27,4 @@ setfw.sh		Set Firewall ports for Nextion Screens
 stripped2.csv		Extra stripped.csv filled by YSF entries.
 update.sh		Update the Pi-Star Hosts files
 user.csv		Nextion Driver is now using user.csv as default
+installfunctions.sh	Install Funtions.php to correct the Not Linked Issue on P25
