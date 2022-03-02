@@ -1099,7 +1099,7 @@ function getActualLink($logLines, $mode) {
 $fh = fopen('/tmp/p25tg.txt', 'r');
 $tgs = fgets($fh);
 fclose($fh);
-		  return "TG ".$tgs;
+		  return "LH TG ".$tgs;
 
 	} else {
             return "Service Not Started";
