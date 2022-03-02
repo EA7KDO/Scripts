@@ -1,13 +1,10 @@
 #!/bin/bash
 
-sudo mount -o remount,rw /
-if [ ! -f /var/www/dashboard/mmdvmhost/functions.php.orig ]; then
-	cp /var/www/dashboard/mmdvmhost/functions.php /var/www/dashboard/mmdvmhost/functions.php.orig 
-fi
-cp /home/pi-star/Scripts/functions.php /var/www/dashboard/mmdvmhost/
+#read -t0.5 -n1 k
+clear         
 
 echo ""
-echo "This script has replaced /var/www/dashboard/mmdvmhost/functions.php"
+echo "This script will replace /var/www/dashboard/mmdvmhost/functions.php"
 echo "If this is the first run it has created a backup file"
 echo "/var/www/dashboard/mmdvmhost/functions.php.orig"
 echo ""
@@ -25,3 +22,22 @@ echo "is required to update the current TG and the storage file"
 echo "" 
 echo "Phil VE3RD"
 echo ""
+printf "Press 'y' to 'Y' to Proceed with Installation (y/Y):"
+
+
+read -n1 k
+
+
+if [ "$k" != "y" ] && [ "$k" != "Y" ]; then
+  printf "\nScript Aborted by User!\n\n"
+  exit
+fi
+
+sudo mount -o remount,rw /
+if [ ! -f /var/www/dashboard/mmdvmhost/functions.php.orig ]; then
+	cp /var/www/dashboard/mmdvmhost/functions.php /var/www/dashboard/mmdvmhost/functions.php.orig 
+fi
+cp /home/pi-star/Scripts/functions.php /var/www/dashboard/mmdvmhost/
+
+  printf "\nInstallation Completed!\n\n"
+
