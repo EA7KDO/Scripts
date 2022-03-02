@@ -9,7 +9,7 @@ getuserinfo.sh		Get user location data - Not used here
 getversions.sh		Get Pi-Star Version Strings
 gitcopy2.sh		Graphic Git Copy for Nextion Screens
 gitcopy3.sh		Test Package - Do Not Use
-gitcopy.sh		gicopy for use by Nextion Screens
+gitcopy.sh		gitcopy.sh for use by Nextion Screens
 IND_Dev.sh		Test Package -n Do Not Use
 IND.sh			Nextion Driver Installation Utility
 installfunctions.sh	Install Funtions.php to correct the Not Linked Issue on P25
