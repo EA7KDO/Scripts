@@ -29,11 +29,17 @@ cp P25Reflector.ini /etc/
 echo -e "${CYAN} Getting New Service startup Script ${NC}"
 wget https://raw.githubusercontent.com/VE3RD/Scripts-RD/main/p25reflector.service 
 chmod +x p25reflector.service
+
 echo -e "${CYAN} Putting service startup script into /usr/local/sbin/ ${NC}"
 cp p25reflector.service /usr/local/sbin
 
-echo -e "${CYAN} Setting P25Reflector to auto start on bootup ${NC}"
-sudo sed -i '/^exit.*/i sudo /usr/local/sbin/p25reflector.service start' /etc/rc.local
+test=$(grep 'p25reflector.service start' /etc/rc.local)
+if [ -z "$test" ]; then
+	echo -e "${CYAN} Setting P25Reflector to auto start on bootup ${NC}"
+	sudo sed -i '/^exit.*/i sudo /usr/local/sbin/p25reflector.service start' /etc/rc.local
+else
+	echo -e "${CYAN} P25Reflector Boot Start Already Exists in /etc/rc.local  ${NC}"
+fi
 echo ""
 echo -e "${CYAN} All DONE! - Have Fun!!! ${NC}"
 echo ""
