@@ -2,7 +2,7 @@
 ############################################################
 #  Get User ID Database from radioid.net                   #
 #  Save it to /usr/local/etc/stripped.csv                  #
-#  Cpnvert 'United States' to 'USA'                        #
+#  Convert 'United States' to 'USA'                        #
 #  					                   #
 #  VE3RD                                      2022-01-12   #
 ############################################################
