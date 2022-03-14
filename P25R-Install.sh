@@ -19,12 +19,13 @@ sudo make
 echo -e "${CYAN} Putting Binary into /usr/local/bin ${NC}"
 make install
 
-echo -e "${CYAN} Adjusting File Paths in P25Reflector.ini ${NC}"
-sudo sed -i '/^\[/h;G;/\[Log/s/\(FilePath=\).*/\1'"\/var\/log\/pi-star"'/m;P;d' ./P25Reflector.ini
-sudo sed -i '/^\[/h;G;/\[Id Lookup/s/\(Name=\).*/\1'"\/usr\/local\/etc\/DMRIds.dat"'/m;P;d' ./P25Refector.ini
-
 echo -e "${CYAN} Putting .ini File into /etc ${NC}"
 cp P25Reflector.ini /etc/
+
+echo -e "${CYAN} Adjusting File Paths in P25Reflector.ini ${NC}"
+sudo sed -i '/^\[/h;G;/\[Log/s/\(FilePath=\).*/\1'"\/var\/log\/pi-star"'/m;P;d' /etc/P25Reflector.ini
+sudo sed -i '/^\[/h;G;/\[Id Lookup/s/\(Name=\).*/\1'"\/usr\/local\/etc\/DMRIds.dat"'/m;P;d' /etc/P25Reflector.ini
+sudo sed -i '/^\[/h;G;/\[General/s/\(Daemon=\).*/\10/m;P;d' /etc/P25Reflector.ini
 
 echo -e "${CYAN} Getting New Service startup Script ${NC}"
 wget https://raw.githubusercontent.com/VE3RD/Scripts-RD/main/p25reflector.service 
