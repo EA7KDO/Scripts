@@ -312,7 +312,7 @@ DMRidX2=6
 echo -e '\e[1;40m'
 clear
 sleep 3
-sudo /home/pi-star/Scripts/FixNextionDriver125.sh
+#sudo /home/pi-star/Scripts/FixNextionDriver125.sh
 	sudo reboot
 
 
