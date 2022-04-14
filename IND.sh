@@ -95,8 +95,11 @@ function installnxd
 
 
 		#Run the Install Script
-		echo "Running the Install Script"
+		echo "Running the ON7LDS Install Script"
 		sudo mount -o remount,rw /
+		if [ -f /etc/mmdvmhost.old ]; then 
+			sudo rm /etc/mmdvmhost.old 
+		fi
 		sudo /Nextion/install.sh 
 		
     		exit
