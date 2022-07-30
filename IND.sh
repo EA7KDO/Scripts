@@ -28,7 +28,11 @@ echo -e '\e[1;44m'
 clear
 
 sudo mount -o remount,rw /
-homedir=/home/pi-star/
+if [ -d /home/rock ]; then
+homedir=/home/rock
+else
+homedir=/home/pi-star
+fi
 curdir=$(pwd)
 clear
 echo " "
@@ -308,8 +312,8 @@ DMRidX2=6
 	#rm -R /Nextion
 	sudo mount -o remount,rw /
         
-	if [ -f /home/pi-star/ndis.txt ]; then
-	sudo  rm /home/pi-star/ndis.txt
+	if [ -f "$homedir"/ndis.txt ]; then
+	sudo  rm "$homedir"/ndis.txt
 	fi
 
 echo -e '\e[1;40m'
