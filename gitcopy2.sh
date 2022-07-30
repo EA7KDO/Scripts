@@ -22,6 +22,7 @@
 #	sudo su
   # 	exit 1
 #fi
+p1=$(pwd) ; cd .. ; homedir=$(pwd) ; cd "$p1"
 
 who=$(whoami)
 echo "This script is running as $who user"
@@ -58,16 +59,16 @@ function getea7kdo
 #	echo "Function EA7KDO"
 	calltxt="EA7KDO"
 
-if [ -d /home/pi-star/Nextion_Temp ]; then
-  	sudo rm -R /home/pi-star/Nextion_Temp
+if [ -d "$homedir"/Nextion_Temp ]; then
+  	sudo rm -R "$homedir"/Nextion_Temp
 fi
 
     	if [ "$scn" == "NX3224K024" ]; then
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 /home/pi-star/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 "$homedir"/Nextion_Temp
 		tst=1
 	fi     
 	if [ "$scn" == "NX4832K035" ]; then
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX4832K035 /home/pi-star/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX4832K035 "$homedir"/Nextion_Temp
 		tst=2
      	fi
 	
@@ -76,8 +77,8 @@ fi
 # VE3RD Script Function
 function getve3rd
 {
-if [ -d /home/pi-star/Nextion_Temp ]; then
-  	sudo rm -R /home/pi-star/Nextion_Temp
+if [ -d "$homedir"/Nextion_Temp ]; then
+  	sudo rm -R "$homedir"/Nextion_Temp
 fi
 	tst=0
 #	echo "Function VE3RD"
@@ -85,9 +86,9 @@ fi
 	calltxt="VE3RD"
 	if [ "$scn" = "NX3224K024" ]; then	
 	 	tst=1  
-	  	sudo git clone --depth 1 https://github.com/VE3RD/Nextion /home/pi-star/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/VE3RD/Nextion "$homedir"/Nextion_Temp
 	elif [ "$scn" == "NX4832K035" ]; then
-	  	sudo git clone --depth 1 https://github.com/VE3RD/NX4832K035 /home/pi-star/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/VE3RD/NX4832K035 "$homedir"/Nextion_Temp
 		tst=2
 	else
 		errtext="Invalid VE3RD Screen Name $scn,  $s1,  $s2"
@@ -183,10 +184,10 @@ sleep 1s
 sudo systemctl stop cron.service  > /dev/null
 
 
-#Test for /home/pi-star/Nextion_Temp and remove it, if it exists
+#Test for "$homedir"/Nextion_Temp and remove it, if it exists
 
-if [ -d /home/pi-star/Nextion_Temp ]; then
-  	sudo rm -R /home/pi-star/Nextion_Temp
+if [ -d "$homedir"/Nextion_Temp ]; then
+  	sudo rm -R "$homedir"/Nextion_Temp
 fi
 
   # Get Nextion Screen/Scripts and support files from github
@@ -213,20 +214,20 @@ else
 	sudo mkdir /usr/local/etc/Nextion_Support
 fi
 
-sudo chmod +x /home/pi-star/Nextion_Temp/*.sh
-sudo rsync -avqru /home/pi-star/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
+sudo chmod +x "$homedir"/Nextion_Temp/*.sh
+sudo rsync -avqru "$homedir"/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* --exclude=profiles.txt
 
-sudo rsync -avqru /home/pi-star/Scripts/stripped2.csv  /usr/local/etc/
+sudo rsync -avqru "$homedir"/Scripts/stripped2.csv  /usr/local/etc/
 sudo mount -o remount,rw / 
 sudo wget https://database.radioid.net/static/user.csv -O /usr/local/etc/stripped.csv
 
-if [ -f /home/pi-star/Nextion_Temp/profiles.txt ]; then
+if [ -f "$homedir"/Nextion_Temp/profiles.txt ]; then
 	if [ ! -f /usr/local/etc/Nextion_Support/profiles.txt ]; then
         	if [ "$fb" ]; then
 			txtn= "Replacing Missing Profiles.txt"
 			txt="$txt\n""$txtn"
         	fi
-        	sudo cp  /home/pi-star/Nextion_Temp/profiles.txt /usr/local/etc/Nextion_Support/
+        	sudo cp  "$homedir"/Nextion_Temp/profiles.txt /usr/local/etc/Nextion_Support/
 	fi
 fi
 
@@ -239,7 +240,7 @@ txt="$txt""$txtn"
 if [ -f /usr/local/etc/"$model$tft" ]; then
 	sudo rm /usr/local/etc/NX*K*.tft
 fi
-sudo cp /home/pi-star/Nextion_Temp/"$model$tft" /usr/local/etc/
+sudo cp "$homedir"/Nextion_Temp/"$model$tft" /usr/local/etc/
 
 
  FILE=/usr/local/etc/"$model$tft"
