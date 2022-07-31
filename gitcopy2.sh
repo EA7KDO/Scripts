@@ -9,7 +9,7 @@
 #							#
 #  KF6S/VE3RD                               2020-05-12  #
 #########################################################
-# Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
+# Valid Screen Names for EA7KDO - NX3224K024, NX4832K035
 # Valid Screen Names for VE3RD - NX3224K024
 
 #if [[ $EUID -ne 0 ]]; then
@@ -30,12 +30,16 @@ sleep 2
 
 run=""
 
+errtext="This is a test"
+
+
 parm1="$1"
 parm2="$2"
 ver="20220124"
 declare -i tst
 
 export NCURSES_NO_UTF8_ACS=1
+export LANG=en_US.UTF-8
 
 if [ ! -f ~/.dialog ]; then
 # j=1
@@ -51,6 +55,22 @@ echo -e '\e[1;44m'
 if [ -z "$1" ]; then
 	clear
 fi
+
+function exitcode
+{
+txt='Abort Function\n\n
+This Script will Now Stop'"\n$errtext"
+
+dialog --title "  Programmed Exit  " --ascii-lines --msgbox "$txt" 8 78
+
+clear
+echo -e '\e[1;40m'
+run="Done"
+exit
+
+}
+
+
 
 # EA7KDO Script Function
 function getea7kdo
@@ -108,18 +128,6 @@ else
 fi
 }
 
-function exitcode
-{
-txt='Abort Funtion
-This Script will Now Stop
-"$errtext"'
-
-whiptail --title " Programmed Exit Function" --msgbox "$txt"  8 78
-echo -e '\e[1;40m'
-run="Done"
-exit
-
-}
 
 #### Start of Main Code
 
@@ -141,20 +149,45 @@ else
    S2="NX3224K024"
    S2A=" Not Available "
 fi
-result=$(whiptail --title "Get $calltxt Screen Package From Github" --menu "Choose Your Nextion Screen Type" --backtitle "This Script by VE3RD $ver" 25 78 16 \
-"$S1" "$S1A 3.5 Inch Nextion Screen" \
-"$S2" "$S2A 2.4 Inch Nextion Screen" \
-"Abort" "Exit Script" 3>&1 1>&2 2>&3)
 
-errt="$?"
-echo "$result"
-scn="$result"
 
-if [ "$errt" == 1 ]||[ "$result" == "Abort" ]; then
-     errtext="Abort Chosen From Main Menu err=$errt"
-#echo "Trap1"
-     exitcode
+result=(dialog --backtitle "Screen Selector" --ascii-lines --menu "Choose Your Next Screen Type" 22 76 16)
+
+options=(1 "$S1A 3.5 Inch Nextion Screen"
+         2 "$S2A 2.4 Inch Nextion Screen"
+         3 " Abort - Exit Script")
+
+choices=$("${result[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+#errt="$?"
+clear
+echo "Choice = $choices"
+
+if [ -z "$choices" ]; then
+#if [ "$choices" != "1" ] || [ "$choices" != "2" ] || [ "$choices" != "3" ]; then
+  errtext="Cancel Button Pressed"
+  exitcode
 fi
+
+for choice in $choices
+do
+    case $choice in
+        1)
+            echo "$S1A 3.5 Inch Nextion Screen Selected"
+		scn="NX4832K035"
+            ;;
+        2)
+            echo "$S2A 2.4 Inch Nextion Screen Selected"
+		scn="NX3224K024"
+            ;;
+        3)
+            echo "Abort - Exit Script"
+		errtext="Abort Selected"
+		exitcode
+            ;;
+    esac
+done
+
 
 if [ "$calltxt" == "VE3RD" ]; then
 	if [ "$result" == "NX3224K024" ]; then
@@ -167,6 +200,7 @@ if [ "$calltxt" == "VE3RD" ]; then
 fi
 
 echo "$scn $calltxt"
+
 
 #echo " End Processing Parameters  - $scn $calltxt"
 
@@ -235,7 +269,6 @@ model="$scn"
     echo "Remove Existing $model$tft and copy in the new one"
 txtn="Remove Existing $model$tft and copy in the new one"
 txt="$txt""$txtn"
-#whiptail --title "$title" --msgbox "$txt" 8 80
 
 if [ -f /usr/local/etc/"$model$tft" ]; then
 	sudo rm /usr/local/etc/NX*K*.tft
@@ -258,7 +291,8 @@ execution_time=`printf "%.2f seconds" $duration`
 
 
 txt="$calltxt Scripts Loaded: $execution_time"
-whiptail --title "$title" --msgbox "$txt" 8 90
+#whiptail --title "$title" --msgbox "$txt" 8 90
+dialog --title "  $title  " --ascii-lines --msgbox "$txt" 8 78
 
 echo -e '\e[1;40m'
 

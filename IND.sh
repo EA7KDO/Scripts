@@ -11,6 +11,7 @@ ver="20200512"
 sudo mount -o remount,rw /
 
 export NCURSES_NO_UTF8_ACS=1
+export LANG=en_US.UTF-8
 
 if [ -f ~/.dialog ]; then
  j=1
@@ -135,7 +136,8 @@ OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
 	 6 "Quit")
 
 CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
+         	--ascii-lines \
+       		--backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
@@ -208,7 +210,8 @@ OPTIONS=(1 "USB to TTL Interface"
 	 3 "Quit")
 
 CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
+         	--ascii-lines \      
+		--backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
@@ -263,7 +266,8 @@ OPTIONS=(1 "Fahrenheit"
 	 3 "Quit")
 
 CHOICE=$(dialog --clear \
-                --backtitle "$BACKTITLE" \
+        	--ascii-lines \
+	       --backtitle "$BACKTITLE" \
                 --title "$TITLE" \
                 --menu "$MENU" \
                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
