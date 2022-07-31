@@ -177,6 +177,9 @@ else
 fi
 
 dialog --title " Mode Selections" --colors --ascii-lines --infobox "\n$DStar1\n\n$DMR1\n\n$YSF1\n\n$NXDN1\n\n$P251\n" 13 30
+sleep 5
+clear
+
 mmdvmhost.service restart
 fi
 
