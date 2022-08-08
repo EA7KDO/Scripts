@@ -95,8 +95,11 @@ function installnxd
 
 
 		#Run the Install Script
-		echo "Running the Install Script"
+		echo "Running the ON7LDS Install Script"
 		sudo mount -o remount,rw /
+		if [ -f /etc/mmdvmhost.old ]; then 
+			sudo rm /etc/mmdvmhost.old 
+		fi
 		sudo /Nextion/install.sh 
 		
     		exit
@@ -193,7 +196,7 @@ sudo mount -o remount,rw /
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
 	echo " "
 
-TITLE="Second Level Menue - Continue"
+TITLE="Second Level Menu - Continue"
 MENU="Choose your Screen-to-Pi Interface"
 
 OPTIONS=(1 "USB to TTL Interface"
@@ -284,8 +287,11 @@ case $CHOICE in
 	sudo mount -o remount,rw /
 
 	# Clear all comment flags on Nextion Driver Block, DMRid lines
-	sudo sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
+	sudo sed '/^#DMRid/s/^#//g' -i /etc/mmdvmhost
 	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX1=\).*/\15/m;P;d'  /etc/mmdvmhost
+	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX2=\).*/\16/m;P;d'  /etc/mmdvmhost
+DMRidX2=6
+
 	echo "Installing BC"
 	sudo apt-get install bc
 
@@ -309,6 +315,7 @@ case $CHOICE in
 echo -e '\e[1;40m'
 clear
 sleep 3
+#sudo /home/pi-star/Scripts/FixNextionDriver125.sh
 	sudo reboot
 
 
