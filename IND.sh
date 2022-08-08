@@ -187,19 +187,24 @@ echo " "
 sudo mount -o remount,rw /
 
 sudo chmod 755 /usr/local/sbin/nextion*
-sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
-sudo sed -i '/^\[/h;G;/Nextion/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
-sudo sed -i '/^\[/h;G;/NextionDriver/s/\(LogLevel=\).*/\12/m;P;d'  /etc/mmdvmhost                        
-sudo sed -i '/^\[/h;G;/Nextion/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
+sudo sed -i '/^\[/h;G;/Nextion]/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost
+sudo sed -i '/^\[/h;G;/Nextion]/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost
+sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(LogLevel=\).*/\12/m;P;d'  /etc/mmdvmhost
+sudo sed -i '/^\[/h;G;/Nextion]/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost
+
 
 if [ -d /home/rock/ ]; then
-	echo "Setting NextioDriver Port to /dev/ttyAML0 for the RadXA"
-	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(Port=\).*/\1\/dev\/ttyAML0/m;P;d'  /etc/mmdvmhost                        
+	tport="/dev/ttyAML0"
+	TOPort=$(echo "$tport" | sed "s/\//\\\\\//g")
+	echo "Setting NextionDriver Port to /dev/ttyAML0 for the RadXA Board"
+	sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(Port=\).*/\1'"$TOPort"'/m;P;d'  /etc/mmdvmhost
 else
-	echo "Setting NextioDriver Port to /dev/ttyUSB0 for pi-star"
-	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(Port=\).*/\1\/dev\/ttyUSB0/m;P;d'  /etc/mmdvmhost                        
+	tport="/dev/ttyUSB0"
+	TOPort=$(echo "$tport" | sed "s/\//\\\\\//g")
+	echo "Setting NextionDriver Port to /dev/ttyUSB0 for Pi-Star"
+	sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(Port=\).*/\1'"$TOPort"'/m;P;d'  /etc/mmdvmhost
 fi
-	echo " "
+	echo "$TOPort"
 sleep 2
 
 TITLE="Second Level Menue - Continue"
@@ -228,6 +233,13 @@ case $CHOICE in
 			sudo sed -i '/^\[/h;G;/Nextion/s/\(ScreenLayout=\).*/\14/m;P;d'  /etc/mmdvmhost
 			# if using TTL_Adapter set WaitForLan=0 we do not need to wait for LAN if using USB for screen
 			sudo sed -i '/^\[/h;G;/NextionDriver/s/\(WaitForLan=\).*/\10/m;P;d'  /etc/mmdvmhost
+			if [ -d /home/rock/ ]; then
+        			tport="/dev/ttyAML0"
+        			TOPort=$(echo "$tport" | sed "s/\//\\\\\//g")
+        			echo "Setting NextionDriver Port to /dev/ttyAML0 for the RadXA Board"
+        			sudo sed -i '/^\[/h;G;/NextionDriver]/s/\(Port=\).*/\1'"$TOPort"'/m;P;d'  /etc/mmdvmhost
+			fi
+
 			sleep 3
 		;;
         2)
