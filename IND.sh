@@ -179,19 +179,28 @@ echo "Checking Nextion Driver Installation"
 echo ""
 	preparedir2
 	sudo /Nextion/check_installation.sh
-echo "Sleeping 5 seconds"
+echo "Sleeping 3 seconds"
         sleep 3
 
 echo " "
 
 sudo mount -o remount,rw /
 
-	sudo chmod 755 /usr/local/sbin/nextion*
-			sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
-			sudo sed -i '/^\[/h;G;/Nextion/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
-			sudo sed -i '/^\[/h;G;/NextionDriver/s/\(LogLevel=\).*/\12/m;P;d'  /etc/mmdvmhost                        
-			sudo sed -i '/^\[/h;G;/Nextion/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
+sudo chmod 755 /usr/local/sbin/nextion*
+sudo sed -i '/^\[/h;G;/Nextion/s/\(Brightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
+sudo sed -i '/^\[/h;G;/Nextion/s/\(IdleBrightness=\).*/\199/m;P;d'  /etc/mmdvmhost                        
+sudo sed -i '/^\[/h;G;/NextionDriver/s/\(LogLevel=\).*/\12/m;P;d'  /etc/mmdvmhost                        
+sudo sed -i '/^\[/h;G;/Nextion/s/\(Port=\).*/\1\/dev\/ttyNextionDriver/m;P;d'  /etc/mmdvmhost                        
+
+if [ -d /home/rock/ ]; then
+	echo "Setting NextioDriver Port to /dev/ttyAML0 for the RadXA"
+	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(Port=\).*/\1\/dev\/ttyAML0/m;P;d'  /etc/mmdvmhost                        
+else
+	echo "Setting NextioDriver Port to /dev/ttyUSB0 for pi-star"
+	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(Port=\).*/\1\/dev\/ttyUSB0/m;P;d'  /etc/mmdvmhost                        
+fi
 	echo " "
+sleep 2
 
 TITLE="Second Level Menue - Continue"
 MENU="Choose your Screen-to-Pi Interface"
