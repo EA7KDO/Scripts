@@ -26,6 +26,10 @@ export GWPage
 : ${DIALOG_ITEM_HELP=4}
 : ${DIALOG_ESC=255}
 
+sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
+sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
+
 CallSign=""
 DID=""
 
@@ -2665,6 +2669,20 @@ done < tmpfile
 
 ##########################    Start of Main Program #########
 echo "Staring Script"
+
+if [ ! -d /etc/backups ]; then
+  mkdir /etc/backups
+  dates=$(date +%F)
+  cp /etc/mmdvmhost /etc/backups/mmdvmhost"-$dates"
+  cp /etc/ysfgateway /etc/backups/ysfgateway"-$dates"
+  cp /etc/nxdngateway /etc/backups/nxdngateway"-$dates"
+  cp /etc/p25gateway /etc/backups/p25gateway"-$dates"
+  cp /etc/dmrgateway /etc/backups/dmrgateway"-$dates"
+fi
+
+
+
+
 MenuMain
 #EditDMRGateNet 1
 #EditInfo
