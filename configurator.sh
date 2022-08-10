@@ -37,6 +37,16 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 #printf "I ${RED}love${NC} Stack Overflow\n"
 
+mode=$?
+if [ "$mode" == "RW" ]; then
+sudo mount -o remount,rw / > /dev/null
+else
+sudo mount -o remount,ro / > /dev/null
+fi
+
+
+
+
 #########  Start of Functions  ################
 function exitcode
 {
