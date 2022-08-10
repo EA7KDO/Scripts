@@ -29,7 +29,7 @@ export GWPage
 sudo sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sudo sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
 sudo sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
-
+Mode="RO"
 CallSign=""
 DID=""
 
@@ -38,7 +38,9 @@ NC='\033[0m' # No Color
 #printf "I ${RED}love${NC} Stack Overflow\n"
 
 mode=$1
-
+if [ -z "$mode" ]; then
+mode="RO"
+fi
 
 
 
@@ -88,7 +90,6 @@ fi
 
 
 MenuMaint
-exit
 }
 
 
@@ -137,6 +138,9 @@ if [ $errorcode -eq 1 ]; then
 	MenuMain
 fi
 if [ $errorcode -eq 255 ]; then
+	MenuMain
+fi
+if [ $mode == "RO" ]; then
 	MenuMain
 fi
 
@@ -343,6 +347,9 @@ fi
 if [ $errorcode -eq 255 ]; then
 MenuMain
 fi
+if [ $mode == "RO" ]; then
+	MenuMain
+fi
 
 
 ## 1
@@ -482,7 +489,7 @@ dm5a=$(sed -nr "/^\[$sect]/ { :l /^Password[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;
 dm6a=$(sed -nr "/^\[$sect]/ { :l /^Port[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 dm7a=$(sed -nr "/^\[$sect]/ { :l /^Local[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 dm8a=$(sed -nr "/^\[$sect]/ { :l /^TGRewrite0[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
-dm9a=$(sed -nr "/^\[$sect1]/ { :l /^TGRewrite1[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
+dm9a=$(sed -nr "/^\[$sect]/ { :l /^TGRewrite1[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 dm10a=$(sed -nr "/^\[$sect]/ { :l /^PCRewrite0[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 dm11a=$(sed -nr "/^\[$sect]/ { :l /^SrcRewrite0[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
 
@@ -519,7 +526,8 @@ MenuMain
 fi
 
 if [ $errorcode -eq 3 ]; then
-	EditTimers       
+        ((N=$N+1))
+	EditDMRNet "$N"     
 fi
 
 if [ $errorcode -eq 0 ] ; then
@@ -541,6 +549,9 @@ fi
 
 if [ "$Jump" -gt 0 ] && [ "$Jump" -lt 7 ]; then
 	EditDMRGateNet "$Jump"
+fi
+if [ $mode == "RO" ]; then
+	EditDMRGateNet "$N"
 fi
 
 
@@ -707,6 +718,8 @@ if [ $errorcode -eq 1 ]; then
         EditDMRGate
 fi
 
+
+
 if [ $errorcode -eq 3 ]; then
 	((GWPage++))
 	if (( $GWPage >= 4 )); then
@@ -718,8 +731,13 @@ if [ $errorcode -eq 3 ]; then
 fi 
 
 if [ $errorcode -eq 255 ]; then
-MenuMain
+	EditDMRGate23
 fi
+
+if [ $mode == "RO" ]; then
+	EditDMRGate23
+fi
+
 
 ############  Net 1/4
 echo Starting Net A"
@@ -933,11 +951,11 @@ EditDMRGate23
 ####################
 
 function EditDMRGate(){
-((GWPage=1))
+((GWPage=0))
 elabel="Net 123"
 
-EditDMRGateNet 1
-exit
+#EditDMRGateNet 1
+#exit
 
 
 g1=$(sed -nr "/^\[General\]/ { :l /^RuleTrace[ ]*=/ { s/.*=[ ]*//; p; q;}; n; b l;}" /etc/dmrgateway)
@@ -1004,13 +1022,17 @@ if [ $errorcode -eq 1 ]; then
 fi
 
 if [ $errorcode -eq 3 ]; then
-	((GWPage++))
-	EditDMRGate23
+	GWPage=0
+	EditDMRGateNet 1
 fi
 
 if [ $errorcode -eq 255 ]; then
-MenuMain
+	MenuMain
 fi
+if [ $mode == "RO" ]; then
+	EditDMRGate
+fi
+
 
 RuleTrace=$(echo "$dmrg1" | sed -n '2p' )
 StartNet=$(echo "$dmrg1"  | sed -n '3p' )
@@ -1134,6 +1156,10 @@ if [ $errorcode -eq 255 ]; then
    dialog --ascii-lines --infobox "ESC Button Pressed - Sleeping 2 seconds" 10 40 ; sleep 2
 	MenuMain
 fi
+if [ $mode == "RO" ]; then
+	MenuMain
+fi
+
 
 DisplayLevel=$(echo "$Logd" | sed -n '1p' )
 FileLevel=$(echo "$Logd"  | sed -n '2p' )
@@ -1426,7 +1452,10 @@ if [ $returncode -eq 255 ]; then
 	MenuMain
 fi
 
+if [ "$mode" == "RO" ]; then
+ MenuMain
 
+fi
 
 Enable=$(echo "$DMRs" | sed -n '2p' )
 CallHang=$(echo "$DMRs" | sed -n '3p' )
@@ -2514,10 +2543,18 @@ Infod=$(dialog  --ascii-lines \
 returncode=$?
 
 
-if [ "$returncode" -eq 1 ]; then
+if [ $returncode -eq 1 ]; then
         dialog --ascii-lines --infobox "No Data - Function Aborted\nSleeping 2 seconds" 10 30 ; sleep 2
         MenuMain
 fi
+
+if [ $mode == "RO" ]; then
+	MenuMain
+fi
+
+
+
+
 Description=$(echo "$Infod" | sed -n '6p')
 exec 3>&-
 
@@ -2567,7 +2604,7 @@ HEIGHT=25
 WIDTH=60
 CHOICE_HEIGHT=35
 BACKTITLE="MMDVM Host Configurator - VE3RD"
-TITLE="Main Menu"
+TITLE="Main Menu Mode=$mode"
 MENU="Choose one of the following options\n RO Read Only"
 
 
@@ -2614,6 +2651,7 @@ if [ $exitcode -eq 1 ]; then
          exit
    
 fi
+
 
 if [ -z "$CHOICE" ]; then
         dialog --ascii-lines --infobox "Choice Box Empty - Exiting Script\nSleeping 2 seconds" 5 40 ; sleep 2
@@ -2676,6 +2714,8 @@ done < tmpfile
 echo "Staring Script"
 
 if [ ! -d /etc/backups ]; then
+ sudo mount -o remount,rw / > /dev/null
+
   mkdir /etc/backups
   dates=$(date +%F)
   cp /etc/mmdvmhost /etc/backups/mmdvmhost"-$dates"
@@ -2683,6 +2723,7 @@ if [ ! -d /etc/backups ]; then
   cp /etc/nxdngateway /etc/backups/nxdngateway"-$dates"
   cp /etc/p25gateway /etc/backups/p25gateway"-$dates"
   cp /etc/dmrgateway /etc/backups/dmrgateway"-$dates"
+sudo mount -o remount,ro / > /dev/null
 fi
 
 
