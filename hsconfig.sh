@@ -2883,7 +2883,7 @@ CHOICE=$(dialog --clear \
         	13 "Edit DMRGateway" \
         	14 "Maintenance & Backup/Restore" \
         	15 "Check - Set Modes and Enables" \
-        	16 "Set Master All Modes" \
+        	16 "Set Master All Modes - RO" \
         	17 "Start Test Funtion" 2>&1 )
 #>/dev/tty)
 
