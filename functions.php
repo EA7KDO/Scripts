@@ -1054,7 +1054,7 @@ function getActualLink($logLines, $mode) {
 		  $to = preg_replace('/[^0-9]/', '', $to);
 		  $tgs = $to;
 	$num = 0;
-	$myfile = fopen("/tmp/p25tg.txt", "w");
+	$myfile = fopen("/etc/p25lhtg.txt", "w");
 	$num = fwrite($myfile,$to);
 	fclose($myfile);
 	  	  return "TG ".$to;
@@ -1066,7 +1066,7 @@ function getActualLink($logLines, $mode) {
 		  $to = preg_replace('/[^0-9]/', '', $to);
           	  $tgs = $to;
 	$num = 0;
-	$myfile = fopen("/tmp/p25tg.txt", "w");
+	$myfile = fopen("/etc/p25lhtg.txt", "w");
 	$num = fwrite($myfile,$to);
 	fclose($myfile);
 		  return "TG ".$to;
@@ -1088,7 +1088,7 @@ function getActualLink($logLines, $mode) {
                }
                if (strpos($logLine,"Unlinked")) {
 	$num = 0;
-	$myfile = fopen("/tmp/p25tg.txt", "w");
+	$myfile = fopen("/etc/p25lhtg.txt", "w");
 	$num = fwrite($myfile,"Not Linked");
 	fclose($myfile);
                   return "Not Linked";
@@ -1096,7 +1096,7 @@ function getActualLink($logLines, $mode) {
 	    }
 //	    return "Not Linked";
 //		$tgs = fread()
-$fh = fopen('/tmp/p25tg.txt', 'r');
+$fh = fopen('/etc/p25lhtg.txt', 'r');
 $tgs = fgets($fh);
 fclose($fh);
 		  return "LH TG ".$tgs;
