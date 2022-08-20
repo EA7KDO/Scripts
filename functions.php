@@ -1,4 +1,4 @@
-<?php
+Wp<?php
 $tgs = 0;
 function getMMDVMConfig() {
 	// loads /etc/mmdvmhost into array for further use
@@ -1046,57 +1046,63 @@ function getActualLink($logLines, $mode) {
 	// 2000-01-01 00:00:00.000 Switched to reflector 10100 due to RF activity from 12345
 	// 2000-01-01 00:00:00.000 Unlinking from reflector 10100 by 12345
 	// 2000-01-01 00:00:00.000 Switched to reflector 10100 by remote command
+
+//M: 2022-08-20 01:51:20.389 Switched to reflector 10210 due to RF activity from VE3RD
 	if (isProcessRunning("P25Gateway")) {
 	   foreach ( array_reverse($logLines) as $logLine ) {
                $to = "";
                if (strpos($logLine,"Linked to")) {
-		  $to = preg_replace('/[^0-9]/', '', substr($logLine, 44, 5));
-		  $to = preg_replace('/[^0-9]/', '', $to);
-		  $tgs = $to;
-	$num = 0;
-	$myfile = fopen("/etc/p25lhtg.txt", "w");
-	$num = fwrite($myfile,$to);
-	fclose($myfile);
-	  	  return "TG ".$to;
+		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 50, 5));
+		  	$to = preg_replace('/[^0-9]/', '', $to);
+		  	$tgs = $to;
+		  	$num = 0;
+			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
+			$num = fwrite($myfile,$tgs);
+			fclose($myfile);
+	  	  	return "TG ".$tgs;
                }
                if (strpos($logLine,"Linked at startup to")) {
 //M: 2022-02-28 08:55:36.300 Linked at startup to reflector 10210
-//		  $to = preg_replace('/[^0-9]/', '', substr($logLine, 55, 5));
-		  $to = preg_replace('/[^0-9]/', '', substr($logLine, 55, 5));
-		  $to = preg_replace('/[^0-9]/', '', $to);
-          	  $tgs = $to;
-	$num = 0;
-	$myfile = fopen("/etc/p25lhtg.txt", "w");
-	$num = fwrite($myfile,$to);
-	fclose($myfile);
-		  return "TG ".$to;
-               }
+//		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 55, 5));
+		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 59, 5));
+		  	$to = preg_replace('/[^0-9]/', '', $to);
+          	  	$tgs = $to;
+			$num = 0;
+			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
+			$num = fwrite($myfile,$tgs);
+			fclose($myfile);
+		  	return "TG ".$tgs;
+              }
 	       if (strpos($logLine,"Switched to reflector")) {
-		  $to = preg_replace('/[^0-9]/', '', substr($logLine, 46, 5));
-		  $to = preg_replace('/[^0-9]/', '', $to);
-		  $tgs = $to;
-		  return "TG ".$to;
+		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 46, 5));
+		  	$to = preg_replace('/[^0-9]/', '', $to);
+		  	$tgs = $to;
+		  	$num = 0;
+			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
+			$num = fwrite($myfile,$tgs);
+			fclose($myfile);
+		  	return "TG ".$to;
                }
 	       if (strpos($logLine,"Starting P25Gateway")) {
-                  return "Not Linked";
+                  	return "Not Linked";
                }
 	       if (strpos($logLine,"unlinking")) {
-                  return "Not Linked";
+                  	return "Not Linked";
                }
 	       if (strpos($logLine,"Unlinking")) {
-                  return "Not Linked";
+                  	return "Not Linked";
                }
                if (strpos($logLine,"Unlinked")) {
-	$num = 0;
-	$myfile = fopen("/etc/p25lhtg.txt", "w");
-	$num = fwrite($myfile,"Not Linked");
-	fclose($myfile);
-                  return "Not Linked";
+			$num = 0;
+			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
+			$num = fwrite($myfile,"Not Linked");
+			fclose($myfile);
+                  	return "Not Linked";
                }
 	    }
 //	    return "Not Linked";
 //		$tgs = fread()
-$fh = fopen('/etc/p25lhtg.txt', 'r');
+$fh = fopen('/home/pi-star/p25lhtg.txt', 'r');
 $tgs = fgets($fh);
 fclose($fh);
 		  return "LH TG ".$tgs;
