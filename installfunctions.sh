@@ -38,6 +38,8 @@ if [ ! -f /var/www/dashboard/mmdvmhost/functions.php.orig ]; then
 	cp /var/www/dashboard/mmdvmhost/functions.php /var/www/dashboard/mmdvmhost/functions.php.orig 
 fi
 cp /home/pi-star/Scripts/functions.php /var/www/dashboard/mmdvmhost/
+sudo echo 10200 > /home/pi-star/p25lhtg.txt
+sudo chmod 766 /home/pi-star/p25lhtg.txt
 
   printf "\nInstallation Completed!\n\n"
 
