@@ -1054,32 +1054,28 @@ function getActualLink($logLines, $mode) {
                if (strpos($logLine,"Linked to")) {
 		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 50, 5));
 		  	$to = preg_replace('/[^0-9]/', '', $to);
-		  	$tgs = $to;
-		  	$num = 0;
+//		  	$num = 0;
 			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
-			$num = fwrite($myfile,$tgs);
+			$num = fwrite($myfile,$to);
 			fclose($myfile);
-	  	  	return "TG ".$tgs;
+	  	  	return "TG ".$to;
                }
                if (strpos($logLine,"Linked at startup to")) {
 //M: 2022-02-28 08:55:36.300 Linked at startup to reflector 10210
 //		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 55, 5));
 		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 59, 5));
 		  	$to = preg_replace('/[^0-9]/', '', $to);
-          	  	$tgs = $to;
-			$num = 0;
+//			$num = 0;
 			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
-			$num = fwrite($myfile,$tgs);
+			$num = fwrite($myfile,$to);
 			fclose($myfile);
-		  	return "TG ".$tgs;
+		  	return "TG ".$to;
               }
 	       if (strpos($logLine,"Switched to reflector")) {
 		  	$to = preg_replace('/[^0-9]/', '', substr($logLine, 46, 5));
 		  	$to = preg_replace('/[^0-9]/', '', $to);
-		  	$tgs = $to;
-		  	$num = 0;
 			$myfile = fopen("/home/pi-star/p25lhtg.txt", "w");
-			$num = fwrite($myfile,$tgs);
+			$num = fwrite($myfile,$to);
 			fclose($myfile);
 		  	return "TG ".$to;
                }
