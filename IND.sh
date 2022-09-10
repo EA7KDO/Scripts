@@ -10,6 +10,8 @@ set -o pipefail
 ver="20200512"
 sudo mount -o remount,rw /
 
+arg1="$?"
+
 export NCURSES_NO_UTF8_ACS=1
 
 if [ -f ~/.dialog ]; then
@@ -27,24 +29,46 @@ sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 echo -e '\e[1;44m'
 clear
 
-sudo mount -o remount,rw /
-homedir=/home/pi-star/
-curdir=$(pwd)
-clear
-echo " "
-echo " If this is a fresh pi-star install - Select Uppdate"
-echo " This will do a pistar update before installing the Driver"
-echo " "
-echo " Selecting Start will install the driver witout doing the Update"
-echo " "
-echo " This script Installs the Nextion Driver. It will require a reboot "
-echo " Part way through the procedure. After the Reboot, run this script again"
-echo " and select 'Continue' in the following menu"
-echo " "
+sudo mount -o remount,rw / 
+homedir=/home/pi-star/ 
+curdir=$(pwd) 
+clear 
+echo " " 
+echo " If this is a fresh pi-star install - Select Uppdate" 
+echo " This will do a pistar update before installing the Driver" 
+echo " " 
+echo " Selecting Start will install the driver without doing the Update" 
+echo " " 
+echo " This script Installs the Nextion Driver. It will require a reboot " 
+echo " Part way through the procedure. After the Reboot, run this script again" 
+echo " and select 'Continue' in the following menu" 
+echo " " 
 sleep 3
 
 continue=0
 ####################
+function cleandriver(){
+
+	#Remove NextionDriver Section
+	sed -i '/\[NextionDriver/,/^$/d' /etc/mmdvmhost
+	echo "Removing Nextion Driver Configuration"
+	#Reset Nextion Port
+        tport="/dev/ttyUSB0"
+        TOPort=$(echo "$tport" | sed "s/\//\\\\\//g")
+        echo "Setting Nextion Port to /dev/ttyUSB0 for Pi-Star"
+        sudo sed -i '/^\[/h;G;/Nextion]/s/\(Port=\).*/\1'"$TOPort"'/m;P;d'  /etc/mmdvmhost
+	
+	if [ -f /etc/mmdvmhost.old ]; then
+		#Remove /etc/mmdvmhost.old
+		echo "Removing old /etc/mmdvmhost.old"
+		sudo rm /etc/mmdvmhost.old
+	fi
+	echo "Configuration Removed - Restarting Script"
+       sleep 2
+}
+
+
+
 function preparedir
 {
                 if [ -d /Nextion ] ; then
@@ -113,6 +137,7 @@ if [ ! -d /temp ] ; then
    sudo mkdir /temp
 fi
 
+
 HEIGHT=15
 WIDTH=60
 CHOICE_HEIGHT=7
@@ -123,9 +148,10 @@ MENU="Select your Installation Mode"
 OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
          2 "Install Nextion Driver - No Update"
          3 "Continue after Reboot from Option 1 or 2"
-	 4 "Check Nextion Driver Instllation"
+	 4 "Check Nextion Driver Installation"
 	 5 "Update stripped.csv"
-	 6 "Quit")
+	 6 "Remove NextionDriver Configuration"
+	 7 "Quit")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -168,7 +194,12 @@ case $CHOICE in
 #		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
 		exit
 	   ;;
-	6)   echo " You Chose to Quit"
+	6)
+            	echo "You chose to Remove the NextionDriver Configuration"
+		cleandriver
+		sudo ./IND.sh
+	   ;;
+	7)   echo " You Chose to Quit"
 		exit
 
 	;;

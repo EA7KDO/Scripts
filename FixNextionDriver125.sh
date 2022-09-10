@@ -10,5 +10,16 @@ if grep -Fq SendUserDataMask /etc/mmdvmhost; then
 	sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00011110' /etc/mmdvmhost
 fi
 
-sudo nextiondriver.service restart
+awk '/\[Nextion/{
+  if($0~/NextionDriver/){
+    found=1
+  }
+  else{
+    found=""
+  }
+}
+found==""
+'
+
+#sudo nextiondriver.service restart
 
