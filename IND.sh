@@ -307,6 +307,7 @@ case $CHOICE in
 	# Clear all comment flags on Nextion Driver Block, DMRid lines
 	sudo sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
 	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX1=\).*/\15/m;P;d'  /etc/mmdvmhost
+	sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX2=\).*/\16/m;P;d'  /etc/mmdvmhost
 
 	if grep -Fq SendUserDataMask /etc/mmdvmhost; then
         	echo "SendUserDataMask Found"
