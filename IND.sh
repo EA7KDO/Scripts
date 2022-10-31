@@ -372,6 +372,7 @@ case $CHOICE in
 	sudo  rm /home/pi-star/ndis.txt
 	fi
 
+sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
 echo -e '\e[1;40m'
 clear
 sleep 3
