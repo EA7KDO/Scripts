@@ -372,7 +372,15 @@ case $CHOICE in
 	sudo  rm /home/pi-star/ndis.txt
 	fi
 
+	if [ ! -f /etc/cron.daily/getstripped.sh ]; then
+		echo "setting getstripped.sh to run in daily crontab"
+		sudo cp /home/pi-star/Scripts/getstripped.sh /etc/cron.daily/
+	fi
+
 sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+
+
+
 echo -e '\e[1;40m'
 clear
 sleep 3
