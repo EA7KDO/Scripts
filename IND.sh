@@ -363,11 +363,11 @@ case $CHOICE in
 
 echo -e '\e[1;33m'
 echo ""
-	if [ ! -f /etc/cron.daily/getstripped.sh ]; then
-		echo "setting getstripped.sh to run in daily crontab"
-		sudo cp /home/pi-star/Scripts/getstripped.sh /etc/cron.daily/
+	if [ ! -f /etc/cron.daily/getstripped ]; then
+		echo "setting getstripped to run in daily crontab"
+		sudo cp /home/pi-star/Scripts/getstripped.sh /etc/cron.daily/getstripped
 	else
-		echo "getstripped.sh found in /etc/cron.daily/"
+		echo "getstripped found in /etc/cron.daily/"
 		echo "No Action Required!"
 	fi
 
