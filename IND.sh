@@ -379,8 +379,6 @@ sleep 3
 
 	sudo pistar-firewall
 
-	echo "Nextion Driver Installation Completed"
-	echo "Rebooting Pi-Star in 3 seconds"
 	#rm -R /Nextion
 	sudo mount -o remount,rw /
         
@@ -389,9 +387,13 @@ sleep 3
 	fi
 
 sleep 3
-#sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
 
 
+	echo "Nextion Driver Installation Completed"
+	echo "Auxilliary Function Installation Completed"
+	echo "Rebooting Pi-Star in 3 seconds"
+sleep 5
 
 echo -e '\e[1;40m'
 clear
