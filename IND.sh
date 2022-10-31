@@ -162,7 +162,7 @@ CHOICE=$(dialog --clear \
                 2>&1 >/dev/tty)
 
 clear
-echo -e '\e[1;44m'
+echo -e '\e[1;37m'
 case $CHOICE in
         1)
             echo "You Chose Pi-Star Update + Install"
@@ -361,6 +361,22 @@ case $CHOICE in
 	sudo rm -R /temp
 	sudo sh -c 'echo "iptables -A OUTPUT -p tcp --dport 5040 -j ACCEPT" > /root/ipv4.fw'
 
+echo -e '\e[1;33m'
+echo ""
+	if [ ! -f /etc/cron.daily/getstripped.sh ]; then
+		echo "setting getstripped.sh to run in daily crontab"
+		sudo cp /home/pi-star/Scripts/getstripped.sh /etc/cron.daily/
+	else
+		echo "getstripped.sh found in /etc/cron.daily/"
+		echo "No Action Required!"
+	fi
+
+echo ""
+
+echo -e '\e[1;37m'
+
+sleep 3
+
 	sudo pistar-firewall
 
 	echo "Nextion Driver Installation Completed"
@@ -372,12 +388,8 @@ case $CHOICE in
 	sudo  rm /home/pi-star/ndis.txt
 	fi
 
-	if [ ! -f /etc/cron.daily/getstripped.sh ]; then
-		echo "setting getstripped.sh to run in daily crontab"
-		sudo cp /home/pi-star/Scripts/getstripped.sh /etc/cron.daily/
-	fi
-
-sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+sleep 3
+#sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
 
 
 
