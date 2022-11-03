@@ -121,7 +121,7 @@ function getcall
 {
 #Set Screen Author
 calltxt=""
-if [ "$parm2" == VE3RD ]; then
+if [ "$parm2" == VE3RD ] || [ "$parm1" == VE3RD ] ; then
 	calltxt="VE3RD"
 else
 	calltxt="EA7KDO"
@@ -151,7 +151,7 @@ else
 fi
 
 
-result=(dialog --backtitle "Screen Selector" --ascii-lines --menu "Choose Your Next Screen Type" 22 76 16)
+result=(dialog --backtitle "Screen Selector - $calltxt" --ascii-lines --menu "Choose Your $calltxt Nextion Screen Model" 22 76 16)
 
 options=(1 "$S1A 3.5 Inch Nextion Screen"
          2 "$S2A 2.4 Inch Nextion Screen"

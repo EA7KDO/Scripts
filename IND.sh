@@ -140,7 +140,7 @@ fi
 
 HEIGHT=15
 WIDTH=60
-CHOICE_HEIGHT=7
+CHOICE_HEIGHT=10
 BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
 TITLE="Main Menu - Nextion Driver Installation"
 MENU="Select your Installation Mode"
@@ -151,7 +151,8 @@ OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
 	 4 "Check Nextion Driver Installation"
 	 5 "Update stripped.csv"
 	 6 "Remove NextionDriver Configuration"
-	 7 "Quit")
+	 7 "Download & Install Nextion Screen Support Files"
+	 8 "Quit")
 
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -199,7 +200,12 @@ case $CHOICE in
 		cleandriver
 		sudo ./IND.sh
 	   ;;
-	7)   echo " You Chose to Quit"
+	7)
+            	echo "This function will install the Nextion Support Files"
+		sudo ./gitcopy2.sh
+		sudo ./IND.sh 
+	   ;;
+	8)   echo " You Chose to Quit"
 		exit
 
 	;;
