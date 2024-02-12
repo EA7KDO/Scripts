@@ -1,17 +1,15 @@
-
 #!/bin/bash
 #################################################################
 #  This script will flash the TFT File into The Nextion Screen  #
-#  Revised to use Python3                                      	#
-#  VE3RD                                      2024/02/11     	#
+#                                                             	#
+#  VE3RD                                      2020/10/10     	#
 #################################################################
 set -o errexit
 set -o pipefail
 ver="20201010"
 
 #sudo apt-get install python serial
-#sudo apt-get install -y python-serial
-sudo apt update && sudo apt -y install python3-serial
+sudo apt-get install -y python-serial
 export NCURSES_NO_UTF8_ACS=1
 
 ## Programmed Shutdown
@@ -44,14 +42,14 @@ function killservices
 }
 function flashscreen
 {
-			sudo python3 /usr/local/bin/Nextion/nextion.py "$pathstr" /dev/ttyUSB0
+			sudo python nextion.py "$pathstr" /dev/ttyUSB0
 			echo "Rebooting ......"
 			sudo reboot
 }
 
 sudo mount -o remount,rw /
 
-# insure python3 seial module is loaded
+# insure python seial module is loaded
 
 errtxt="Nothing"
 
