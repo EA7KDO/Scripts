@@ -8,6 +8,7 @@
 set -o errexit
 set -o pipefail
 ver="20200512"
+systemctl daemon-reload
 sudo mount -o remount,rw /
 
 arg1="$?"
@@ -41,7 +42,11 @@ echo " This will do a pistar update before proceeding"
 echo " " 
 echo " This script (Option 7)  will remove and re-install the Nextion Driver. Do this ONLY if the " 
 echo " Driver is causing problems" 
-sleep 5
+sleep 1
+echo " " 
+echo " " 
+
+read -n 1 -s -r -p "Press any key to Continue"
 
 continue=0
 ####################
@@ -131,18 +136,41 @@ function clearcomments()
 sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
 
 }
+function SetTemp()
+{
+        m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
+	sudo mount -o remount,rw /
+
+        if [ -z "$m1" ]; then
+                sudo mount -o remount,rw /
+
+                p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
+                p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
+                sudo sed -i "$p1$p2" /etc/mmdvmhost
+         fi
+
+}
+
+function SetHostName()
+{
+
+ hn=$(cat /etc/hostname)
+ hostname $hn
+
+}
 ##############################  MAIN PROGRAM #################
 if [ ! -d /temp ] ; then
    sudo mkdir /temp
 fi
 
+SetHostName
 
 HEIGHT=15
 WIDTH=90
 CHOICE_HEIGHT=10
 BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
-TITLE="Main Menu - Nextion Driver Installation"
-MENU="Select your Installation Mode - Note: Nextion Driver now in Pi-Star"
+TITLE="Main Menu - Nextion Driver & Options Installation"
+MENU="Select your Function Here - Note: Nextion Driver now in Pi-Star"
 
 OPTIONS=(1 "Pi-Star Update - Required for New Install"
          2 "Setup MMDVMHost and Install Auxiliary Components"
@@ -165,17 +193,17 @@ clear
 echo -e '\e[1;37m'
 case $CHOICE in
         1)
-            echo "You Chose Pi-Star Update + Install"
+		 echo "You Chose Pi-Star Update"
 	        sudo systemctl stop cron.service
 
 		sudo mount -o remount,rw /
 		sudo pistar-update
-		sudo mount -o remount,rw /
-		installnxd
+		sudo ./IND42.sh
             ;;
         2)
             echo "Setup Nextion Configuration and Install TGIFSPOT Support"
 		continue=1
+
             ;;
 	3)
 	    echo "Checking Nextion Driver Installation"
@@ -183,26 +211,32 @@ case $CHOICE in
 		sudo /Nextion/check_installation.sh
 		echo "Sleeping 7 Seconds before re-staring the script"
 		sleep 7
-		sudo ./IND.sh
+		sudo ./IND42.sh
 	   ;;
 	4)
 		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
 #		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
-		exit
+		sudo ./IND42.sh
 	   ;;
 	5)
             	echo "You chose to Remove the NextionDriver Configuration"
 		cleandriver
-		sudo ./IND.sh
+		sudo ./IND42.sh
 	   ;;
 	6)
-            	echo "This function will install the Nextion Support Files"
-		sudo ./gitcopy2.sh
-		sudo ./IND.sh 
+		if [ "$1" == "VE3RD" ]; then	 
+            		echo "Installing  the EA7KDO Nextion Support Files"
+			sudo ./gitcopy2.sh VE3RD
+		else
+	            	echo "Installing  the EA7KDO Nextion Support Files"
+			sudo ./gitcopy2.sh
+		fi
+		sudo ./IND42.sh 
 	   ;;
 	7)
-		echo "Removing and Re-Installing ON7LDS Nextion Driver
+		echo "Removing and Re-Installing ON7LDS Nextion Driver"
 		installnxd
+		sudo ./IND42.sh
 	    ;;
 
 	8)   echo " You Chose to Quit"
@@ -293,17 +327,8 @@ case $CHOICE in
     	esac
         echo " "
 
-        m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
-	sudo mount -o remount,rw /
 
-        if [ -z "$m1" ]; then
-                sudo mount -o remount,rw /
-
-                p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
-                p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
-                sudo sed -i "$p1$p2" /etc/mmdvmhost
-         fi
-
+SetTemp
 
 
 #TITLE="Select Temperature Mode"
@@ -400,6 +425,8 @@ sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/l
 	echo "Auxilliary Function Installation Completed"
 	echo "Rebooting Pi-Star in 3 seconds"
 sleep 5
+
+SetHostName
 
 echo -e '\e[1;40m'
 clear
