@@ -407,6 +407,7 @@ echo ""
 echo -e '\e[1;37m'
 
 sleep 3
+        sudo cp /home/pi-star/Scripts/groups.txt /usr/local/etc/
 
 	sudo pistar-firewall
 
