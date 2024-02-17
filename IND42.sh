@@ -131,6 +131,8 @@ function installnxd
 
 }
 
+
+
 function clearcomments()
 {
 sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
@@ -176,7 +178,7 @@ OPTIONS=(1 "Pi-Star Update - Required for New Install"
          2 "Setup MMDVMHost and Install Auxiliary Components"
 	 3 "Check Nextion Driver Installation"
 	 4 "Update stripped.csv"
-	 5 "Remove NextionDriver Configuration in /etc/mmdvmhost"
+	 5 "Remove & Re-Install NextionDriver Configuration in /etc/mmdvmhost"
 	 6 "Download & Install TGIFSPOT Nextion Screen Support Files"
 	 7 "Remove and Re-Install ON7LDS Nextion Driver Binary"
 	 8 "Quit")
@@ -219,8 +221,26 @@ case $CHOICE in
 		sudo ./IND42.sh
 	   ;;
 	5)
-            	echo "You chose to Remove the NextionDriver Configuration"
+            	echo "You chose to Remove and ReInstall the NextionDriver Section"
+		# Remove Section	
 		cleandriver
+		# Install section
+		sudo /Nextion/NextionDriver_ConvertConfig /etc/mmdvmhost
+		# Clear all comment flags on Nextion Driver Block, DMRid lines
+		sudo sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
+
+		#Reset DMRidx State and Country Fields
+		sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX1=\).*/\15/m;P;d'  /etc/mmdvmhost
+		sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX2=\).*/\16/m;P;d'  /etc/mmdvmhost
+
+		#Set UserDataMask Fields if not already there.
+		if grep -Fq SendUserDataMask /etc/mmdvmhost; then
+        		echo "SendUserDataMask Found"
+ 		else
+        		echo "Inserting SendUserDataMask"
+        		sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00011110' /etc/mmdvmhost
+		fi
+
 		sudo ./IND42.sh
 	   ;;
 	6)
