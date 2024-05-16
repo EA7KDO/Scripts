@@ -10,7 +10,7 @@
 #  KF6S/VE3RD                               2024-05-03  #
 #########################################################
 # Use screen model from command $1
-# Valid Screen Names for EA7KDO - NX3224K024, NX4832K935
+# Valid Screen Names for VE3ZRD - NX3224K024, NX4832K935
 declare -i tst
 
 if [ -z "$0" ]; then
@@ -18,16 +18,15 @@ if [ -z "$0" ]; then
 	echo ""
 	echo "  No Screen Name Provided"
 	echo
-        echo "	 Valid Screens - EA7KDO) - NX3224K024, NX4832K035"
+        echo "	 Valid Screens -VE3RD NX4832K035  BETA"
 	echo " " 
-	echo " 	Syntax: gitcopy.sh NX????K???   // Will copy EA7KDO Files - Default for Screen"
+	echo " 	Syntax: gitcopy.sh NX????K???   // Will copy VE3RD Beta Files - Default for Screen"
 	echo " 	Adding a second parameter(anything) will provide feedback as the script runs (Commandline)"
 	echo " "
 	exit
 fi
  p1=$(pwd) ; cd .. ; homedir=$(pwd) ; cd "$p1"
 
-#s1="NX3224K024"
 s3="NX4832K035"
 errtext="Error! - Aborting"
 
@@ -38,10 +37,9 @@ scn="${scn:0:10}"
 
 #Feed back is off by default - Turn it on with anything as parameter  2
 fb="$2"
-#Set Call to EA7KDO
-calltxt="EA7KDO"
+#Set Call to VE3ZRD
+calltxt="VE3ZRD"
 
-#echo "$scn"
 
 ## Programmed Shutdown
 function exitcode
@@ -72,26 +70,13 @@ fi
 
 }
 
-# EA7KDO Script Function
-function getea7kdo
+# VE3ZRD Script Function
+function getve3zrdbeta
 {
 	tst=0
-#	echo "Function EA7KDO"
-	calltxt="EA7KDO"
+#	echo "Function VE3ZRD"
+	calltxt="VE3ZRD"
 
-    	if [ "$scn" == "NX3224K024" ]; then
-		cleandirs
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 "$homedir"/Nextion_Temp
-		chmod +x "$homedir"/Nextion_Temp/*.sh
-		mkdir /usr/local/etc/Nextion_Support
-		sudo rsync -avqru "$homedir"/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
-		sudo cp "$homedir"/Nextion_Temp/"$model$tft" /usr/local/etc/
-		if [ "$fb" ]; then
-		    	echo "Downloaded new Screen package for $model$tft"
-			echo "Copied new tft to /usr/local/etc/"	
-		fi
-tst=1		
-	fi     
 	if [ "$scn" == "NX4832K035" ]; then
 		cleandirs
 	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-KDO "$homedir"/Nextion_Temp
@@ -104,9 +89,11 @@ tst=1
 			echo "Copied new tft to /usr/local/etc/"	
 		fi
      	fi
-tst=2	
+	
+	tst=2	
+	
 	if [ "$tst" == 0 ]; then
-		errtext="Invalid EA7KDO Screen Name $scn"	
+		errtext="Invalid VE3ZRD Screen Name $scn"	
 		exitcode 
 	fi
 }
@@ -118,11 +105,11 @@ tst=2
 #echo "$scn  - $call" 
 if [ "$fb" ]; then
 	        if [ "$scn" != "$s1" -a "$scn" != "$s3" ]; then
-              		echo "EA7KDO Screen Name MUST be NX3224K024 or NX4832K035"
-                       	errtext="Invalid EA7KDO Screen Name"
+              		echo "VE3ZRD Screen Name MUST be NX4832K035"
+                       	errtext="Invalid VE3ZRD Screen Name"
                         exitcode
 		else
-			echo "Loading EA7KDO $scn Screen Package"
+			echo "Loading VE3ZRD $scn Screen Package"
                 fi
 fi
 
@@ -150,7 +137,7 @@ sudo systemctl stop cron.service  > /dev/null
 # Using "$homedir"/Nextion_Temp/
 
 
-getea7kdo
+getve3zrdbeta
  
 model="$scn"
 
