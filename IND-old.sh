@@ -3,12 +3,11 @@
 #  This script will automate the process of                #
 #  Installing the Nextion Driver 			   #
 #							   #
-#  VE3RD                                      2024/05/21   #
+#  VE3RD                                      2020/10/04   #
 ############################################################
 set -o errexit
 set -o pipefail
 ver="20200512"
-systemctl daemon-reload
 sudo mount -o remount,rw /
 
 arg1="$?"
@@ -25,30 +24,26 @@ fi
 #title_color = (YELLOW,RED,ON)
 sed -i '/use_colors = /c\use_colors = ON' ~/.dialogrc
 sed -i '/screen_color = /c\screen_color = (WHITE,BLUE,ON)' ~/.dialogrc
+sed -i '/title_color = /c\title_color = (YELLOW,RED,ON)' ~/.dialogrc
 
 echo -e '\e[1;44m'
 clear
 
 sudo mount -o remount,rw / 
 homedir=/home/pi-star/ 
-
+curdir=$(pwd) 
+clear 
 echo " " 
-echo "  NEW NEW NEW " 
-echo "  The ON7LDS Nextion Screen Driver Version 1.25 is now in the Pi-Star Image" 
-echo "  Vers 4,1,8, 4.2 and the Beta 4.3"
-echo "  Older versions will require you to run Option 7 Before Option 2" 
-echo " "
-echo " If this is a fresh pi-star install - Select Option 1 - Update Pi-Star" 
-echo " This will do a pistar update before you proceed to step 2" 
-echo " Option 2 SHOULD do everything required to do a NORMAL NextionDriver Setup"
+echo " If this is a fresh pi-star install - Select Uppdate" 
+echo " This will do a pistar update before installing the Driver" 
 echo " " 
-echo " Option 7 will remove and re-install the Nextion Driver. Do this ONLY if the " 
-echo " Driver is causing problems OR You are prunning a Pre Version 4 version of pi-star" 
-sleep 1
+echo " Selecting Start will install the driver without doing the Update" 
 echo " " 
+echo " This script Installs the Nextion Driver. It will require a reboot " 
+echo " Part way through the procedure. After the Reboot, run this script again" 
+echo " and select 'Continue' in the following menu" 
 echo " " 
-
-read -n 1 -s -r -p "Press any key to Continue"
+sleep 3
 
 continue=0
 ####################
@@ -93,7 +88,6 @@ function preparedir2 () {
 function installnxd
 {
 
-
 		echo " "
 		echo "STARTING NEXTION DRIVER INSTALLATION"
 		echo " "
@@ -133,33 +127,9 @@ function installnxd
 
 }
 
-
-
 function clearcomments()
 {
 sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
-
-}
-function SetTemp()
-{
-        m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
-	sudo mount -o remount,rw /
-
-        if [ -z "$m1" ]; then
-                sudo mount -o remount,rw /
-
-                p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
-                p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
-                sudo sed -i "$p1$p2" /etc/mmdvmhost
-         fi
-
-}
-
-function SetHostName()
-{
-
- hn=$(cat /etc/hostname)
- hostname $hn
 
 }
 ##############################  MAIN PROGRAM #################
@@ -167,22 +137,21 @@ if [ ! -d /temp ] ; then
    sudo mkdir /temp
 fi
 
-SetHostName
 
 HEIGHT=15
-WIDTH=90
+WIDTH=60
 CHOICE_HEIGHT=10
 BACKTITLE="This SCRIPT will Install the Nextion Driver,  BC,  and Firewall Rule  - VE3RD $ver"
-TITLE="Main Menu - Nextion Driver & Options Installation"
-MENU="Select your Function Here - Note: Nextion Driver now in Pi-Star"
+TITLE="Main Menu - Nextion Driver Installation"
+MENU="Select your Installation Mode"
 
-OPTIONS=(1 "Pi-Star Update - Required for New Install"
-         2 "Setup NextionDtiver, MMDVMHost and Install Auxiliary Components"
-	 3 "Check Nextion Driver Installation"
-	 4 "Update stripped.csv"
-	 5 "Remove & Re-Install NextionDriver Configuration in /etc/mmdvmhost"
-	 6 "Download & Install TGIFSPOT Nextion Screen Support Files"
-	 7 "Remove and Re-Install ON7LDS Nextion Driver Binary"\
+OPTIONS=(1 "Pi-Star Update + Install Nextion Driver"
+         2 "Install Nextion Driver - No Update"
+         3 "Continue after Reboot from Option 1 or 2"
+	 4 "Check Nextion Driver Installation"
+	 5 "Update stripped.csv"
+	 6 "Remove NextionDriver Configuration"
+	 7 "Download & Install Nextion Screen Support Files"
 	 8 "Quit")
 
 CHOICE=$(dialog --clear \
@@ -197,70 +166,45 @@ clear
 echo -e '\e[1;37m'
 case $CHOICE in
         1)
-		 echo "You Chose Pi-Star Update"
+            echo "You Chose Pi-Star Update + Install"
 	        sudo systemctl stop cron.service
 
 		sudo mount -o remount,rw /
 		sudo pistar-update
-		sudo ./IND42.sh
+		sudo mount -o remount,rw /
+		installnxd
             ;;
         2)
-            echo "Setup Nextion Configuration and Install TGIFSPOT Support"
-		continue=1
-
+            echo "You Chose Install - No Update"
+		installnxd
             ;;
-	3)
+        3)
+            echo "You Chose Continue after Reboot"
+		continue=1
+            ;;
+	4)
 	    echo "Checking Nextion Driver Installation"
 		preparedir2
 		sudo /Nextion/check_installation.sh
 		echo "Sleeping 7 Seconds before re-staring the script"
 		sleep 7
-		sudo ./IND42.sh
-	   ;;
-	4)
-		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
-#		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
-		sudo ./IND42.sh
+		sudo ./IND.sh
 	   ;;
 	5)
-            	echo "You chose to Remove and ReInstall the NextionDriver Section"
-		# Remove Section	
-		cleandriver
-		# Install section
-		sudo /Nextion/NextionDriver_ConvertConfig /etc/mmdvmhost
-		# Clear all comment flags on Nextion Driver Block, DMRid lines
-		sudo sed '/DMRid/s/^#//g' -i /etc/mmdvmhost
-
-		#Reset DMRidx State and Country Fields
-		sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX1=\).*/\15/m;P;d'  /etc/mmdvmhost
-		sudo sed -i '/^\[/h;G;/NextionDriver/s/\(DMRidX2=\).*/\16/m;P;d'  /etc/mmdvmhost
-
-		#Set UserDataMask Fields if not already there.
-		if grep -Fq SendUserDataMask /etc/mmdvmhost; then
-        		echo "SendUserDataMask Found"
- 		else
-        		echo "Inserting SendUserDataMask"
-        		sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00011110' /etc/mmdvmhost
-		fi
-
-		sudo ./IND42.sh
+		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
+#		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
+		exit
 	   ;;
 	6)
-		if [ "$1" == "VE3RD" ]; then	 
-            		echo "Installing  the EA7KDO Nextion Support Files"
-			sudo ./gitcopy2.sh VE3RD
-		else
-	            	echo "Installing  the EA7KDO Nextion Support Files"
-			sudo ./gitcopy2.sh
-		fi
-		sudo ./IND42.sh 
+            	echo "You chose to Remove the NextionDriver Configuration"
+		cleandriver
+		sudo ./IND.sh
 	   ;;
 	7)
-		echo "Removing and Re-Installing ON7LDS Nextion Driver"
-		installnxd
-		sudo ./IND42.sh
-	    ;;
-
+            	echo "This function will install the Nextion Support Files"
+		sudo ./gitcopy2.sh
+		sudo ./IND.sh 
+	   ;;
 	8)   echo " You Chose to Quit"
 		exit
 
@@ -349,8 +293,17 @@ case $CHOICE in
     	esac
         echo " "
 
+        m1=$(sudo sed -n '/^[ \t]*\[Nextion\]/,/\[/s/^[ \t]*DisplayTempInFahrenheit[^#; \t]*=[ \t]*//p' /etc/mmdvmhost)
+	sudo mount -o remount,rw /
 
-SetTemp
+        if [ -z "$m1" ]; then
+                sudo mount -o remount,rw /
+
+                p1="/^\[Nextion\]/,/^\[/ { x; /^$/ !{ x; H }; /^$/ { x; h; }; d; }; x; /^\[Nextion\]/ "
+                p2=" { s/\(\n\+[^\n]*\)$/\nDisplayTempInFahrenheit=0\1/; p; x; p; x; d }; x"
+                sudo sed -i "$p1$p2" /etc/mmdvmhost
+         fi
+
 
 
 #TITLE="Select Temperature Mode"
@@ -430,8 +383,6 @@ echo -e '\e[1;37m'
 
 sleep 3
 
-        sudo cp /home/pi-star/Scripts/groups.txt /usr/local/etc/
-
 	sudo pistar-firewall
 
 	#rm -R /Nextion
@@ -449,8 +400,6 @@ sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/l
 	echo "Auxilliary Function Installation Completed"
 	echo "Rebooting Pi-Star in 3 seconds"
 sleep 5
-
-SetHostName
 
 echo -e '\e[1;40m'
 clear
