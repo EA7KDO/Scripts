@@ -70,6 +70,19 @@ fi
 
 }
 
+
+function ChkColorSet()
+{
+	if [ ! -f  /etc/Colors.ini ]; then
+		cp /usr/local/etc/Nextion_Support/Colors.ini /etc/
+	fi
+
+	if [ ! -f  /etc/profiles.txt ]; then
+		cp /usr/local/etc/Nextion_Support/profiles.txt /etc/
+	fi
+}
+
+
 # VE3ZRD Script Function
 function getve3zrdbeta
 {
@@ -141,7 +154,7 @@ getve3zrdbeta
  
 model="$scn"
 
-
+ ChkColorSet
 
  FILE=/usr/local/etc/"$model$tft"
  if [ ! -f "$FILE" ]; then
