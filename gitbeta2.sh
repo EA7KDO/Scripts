@@ -104,6 +104,12 @@ start=$(date +%s.%N)
 model="$scn"
 tft='.tft' 
 
+
+if [ "$2" ]; then
+rm /etc/Colors.ini
+fi
+
+
 #Put Pi-Star file system in RW mode
 sudo mount -o remount,rw / > /dev/null
 sleep 1s
