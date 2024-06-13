@@ -1,4 +1,4 @@
-#!/bin/bash
+Wg#!/bin/bash
 ############################################################
 #  This script will automate the process of                #
 #  Installing the Nextion Driver 			   #
@@ -202,7 +202,7 @@ case $CHOICE in
 
 		sudo mount -o remount,rw /
 		sudo pistar-update
-		sudo ./IND42.sh
+		sudo ./IND.sh
             ;;
         2)
             echo "Setup Nextion Configuration and Install TGIFSPOT Support"
@@ -215,12 +215,12 @@ case $CHOICE in
 		sudo /Nextion/check_installation.sh
 		echo "Sleeping 7 Seconds before re-staring the script"
 		sleep 7
-		sudo ./IND42.sh
+		sudo ./IND.sh
 	   ;;
 	4)
 		sudo wget https://database.radioid.net/static/user.csv  --output-document=/usr/local/etc/stripped.csv
 #		sudo rsync -avqru /home/pi-star/Nextion_Temp/stripped2.csv  /usr/local/etc/
-		sudo ./IND42.sh
+		sudo ./IND.sh
 	   ;;
 	5)
             	echo "You chose to Remove and ReInstall the NextionDriver Section"
@@ -243,7 +243,7 @@ case $CHOICE in
         		sed -i '/^\[NextionDriver\]/a\SendUserDataMask=0b00011110' /etc/mmdvmhost
 		fi
 
-		sudo ./IND42.sh
+		sudo ./IND.sh
 	   ;;
 	6)
 		if [ "$1" == "VE3RD" ]; then	 
@@ -253,12 +253,12 @@ case $CHOICE in
 	            	echo "Installing  the EA7KDO Nextion Support Files"
 			sudo ./gitcopy2.sh
 		fi
-		sudo ./IND42.sh 
+		sudo ./IND.sh 
 	   ;;
 	7)
 		echo "Removing and Re-Installing ON7LDS Nextion Driver"
 		installnxd
-		sudo ./IND42.sh
+		sudo ./IND.sh
 	    ;;
 
 	8)   echo " You Chose to Quit"
