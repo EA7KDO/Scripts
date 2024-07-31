@@ -92,13 +92,14 @@ function getve3zrdbeta
 
 	if [ "$scn" == "NX4832K035" ]; then
 		cleandirs
-	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-KDO "$homedir"/Nextion_Temp
+#	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-KDO "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-Beta "$homedir"/Nextion_Temp
 		sudo chmod +x "$homedir"/Nextion_Temp/*.sh
 		mkdir /usr/local/etc/Nextion_Support
 		sudo rsync -avqru "$homedir"/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
 		sudo cp "$homedir"/Nextion_Temp/"$model$tft" /usr/local/etc/
 		if [ "$fb" ]; then
-		    	echo "Downloaded new Screen package for $model$tft"
+		    	echo "Downloaded new VE3ZRD Screen package for $model$tft"
 			echo "Copied new tft to /usr/local/etc/"	
 		fi
      	fi
