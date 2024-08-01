@@ -93,7 +93,7 @@ function getve3zrdbeta
 	if [ "$scn" == "NX4832K035" ]; then
 		cleandirs
 #	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-KDO "$homedir"/Nextion_Temp
-	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-Beta "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/TGIF_Network/NX4832K035-Beta "$homedir"/Nextion_Temp
 		sudo chmod +x "$homedir"/Nextion_Temp/*.sh
 		mkdir /usr/local/etc/Nextion_Support
 		sudo rsync -avqru "$homedir"/Nextion_Temp/* /usr/local/etc/Nextion_Support/ --exclude=NX* 
@@ -176,6 +176,6 @@ fi
 
 
 # echo "$scn Ready  $execution_time"
-echo "$scn Ready to Flash! $execution_time"
+echo "Beta $scn Ready! $execution_time"
 
 
