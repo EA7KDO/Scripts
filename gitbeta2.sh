@@ -83,7 +83,7 @@ if [ -d "$homedir"/Nextion_Temp ]; then
 fi
 
 	if [ "$scn" == "NX4832K035" ]; then
-	  	sudo git clone --depth 1 https://github.com/VE3ZRD/NX4832K035-KDO "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/TGIF-Nertwork/NX4832K035-Beta "$homedir"/Nextion_Temp
 		tst=2
      	fi
 	
