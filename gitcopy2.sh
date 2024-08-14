@@ -84,11 +84,11 @@ if [ -d "$homedir"/Nextion_Temp ]; then
 fi
 
     	if [ "$scn" == "NX3224K024" ]; then
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX3224K024 "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/TGIF-Network/NX3224K024 "$homedir"/Nextion_Temp
 		tst=1
 	fi     
 	if [ "$scn" == "NX4832K035" ]; then
-	  	sudo git clone --depth 1 https://github.com/EA7KDO/NX4832K035 "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/TGIF/Network/NX4832K035-KDO "$homedir"/Nextion_Temp
 		tst=2
      	fi
 	
@@ -108,7 +108,7 @@ fi
 	 	tst=1  
 	  	sudo git clone --depth 1 https://github.com/VE3RD/Nextion "$homedir"/Nextion_Temp
 	elif [ "$scn" == "NX4832K035" ]; then
-	  	sudo git clone --depth 1 https://github.com/VE3RD/NX4832K035 "$homedir"/Nextion_Temp
+	  	sudo git clone --depth 1 https://github.com/TGIF-Network/NX4832K035-Beta "$homedir"/Nextion_Temp
 		tst=2
 	else
 		errtext="Invalid VE3RD Screen Name $scn,  $s1,  $s2"
